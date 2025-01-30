@@ -131,7 +131,7 @@ force_manager.create_force = function(name, spawn_surface)
     force.technologies["artillery-shell-damage-1"].enabled = false
     force.technologies["artillery-shell-range-1"].enabled = false
     force.technologies["artillery-shell-speed-1"].enabled = false
-    force.technologies["logistic-system"].enabled = false
+    -- force.technologies["logistic-system"].enabled = false
     force.technologies["atomic-bomb"].enabled = false
 
     if spawn_surface ~= "nauvis" then
@@ -406,22 +406,6 @@ function DC()
 end
 
 
--- 设置时间修正
-function SetFixTime(player_name, value)
-    if storage.fixtime == nil then
-        storage.fixtime = {}
-    end
-    storage.fixtime[player_name] = value
-end
-
--- 设置权重
-function SetWeight(player_name, value)
-    if storage.fixweight == nil then
-        storage.fixweight = {}
-    end
-    storage.fixweight[player_name] = value
-end
-
 -- 清空神游记录
 function ClearSpeedRank()
     for _, speed_rank in pairs(storage.speed_rank) do
@@ -444,19 +428,6 @@ function DeleteOfflinePlayer()
     end
 end
 
-local function getfixtime(player_name)
-    if storage.fixtime == nil then
-        storage.fixtime = {}
-    end
-    return storage.fixtime[player_name] or 1
-end
-
-local function getweight(player_name)
-    if storage.fixweight == nil then
-        storage.fixweight = {}
-    end
-    return storage.fixweight[player_name] or 1
-end
 
 -- 获取星球之间的距离
 local function get_distance(start_planet, target_planet)
