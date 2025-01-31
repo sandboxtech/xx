@@ -235,7 +235,7 @@ end
 
 -- 销毁宗门
 force_manager.destroy_force = function(force, no_clear_inside)
-    game.print("宗门:" .. force_manager.get_force_name(force) .. "陨落")
+    game.print("宗门 " .. force_manager.get_force_name(force) .. " 陨落")
     -- 宗门玩家改为player宗门
     for _, player in pairs(force.players) do
         -- 关闭已加入玩家界面
@@ -424,7 +424,7 @@ DC = function()
 end
 
 -- 清空神游记录
-ClearSpeedRank = function ()
+ClearSpeedRank = function()
     for _, speed_rank in pairs(storage.speed_rank) do
         for key, planet_data in pairs(speed_rank) do
             if type(planet_data) == "table" then
@@ -435,7 +435,7 @@ ClearSpeedRank = function ()
 end
 
 -- 删除离线时长超过100小时的玩家
-DeleteOfflinePlayer = function ()
+DeleteOfflinePlayer = function()
     for _, player in pairs(game.players) do
         if not player.connected then
             if player.last_online < game.tick - 100 * 60 * 60 * 60 then
@@ -460,8 +460,12 @@ end
 
 -- 每帧调用
 script.on_event(defines.events.on_tick, function(event)
+    
 
-    if event.tick % 60 * 60 * 60 == 0 then
+    if event.tick % 6 * 60 == 0 then
+    -- if event.tick % 60 * 60 * 60 == 0 then
+        game.reset_time_played()
+
         -- 删除无人宗门
         local list = {}
         for _, info in pairs(storage.forceInfos) do
@@ -478,13 +482,11 @@ script.on_event(defines.events.on_tick, function(event)
                     break
                 end
             end
+
             if min_offline_time > 72 then
-                game.print(string.format("宗门 %s 后继无人，已经被销毁", info.info.name))
                 DF(info.index)
             end
         end
-
-        game.reset_time_played()
     end
 
     -- 回收地块
@@ -528,103 +530,106 @@ script.on_event(defines.events.on_tick, function(event)
         table.remove(storage.dc_list, 1)
     end
 
+
+    if event.tick % 360 ~= 0 then
+        return
+    end
+
     -- 遍历在线玩家
-    for _, player in pairs(game.players) do
-        if player.connected then
-            if player.character ~= nil and player.character.surface.platform ~= nil then
-                -- 如果玩家在仙舟上
-                local platform = player.character.surface.platform
+    for _, player in pairs(game.connected_players) do
+        if player.character ~= nil and player.character.surface.platform ~= nil then
+            -- 如果玩家在仙舟上
+            local platform = player.character.surface.platform
 
-                if platform.space_location ~= nil then -- 停靠 [planet=nauvis]
-                    if storage.speed_rank == nil then
-                        storage.speed_rank = {}
-                    end
-                    if storage.speed_rank[player.name] == nil then
-                        storage.speed_rank[player.name] = {}
-                    end
-                    if storage.speed_rank[player.name].start_planet == nil then
-                        storage.speed_rank[player.name].start_planet = platform.space_location.name
-                    elseif storage.speed_rank[player.name].start_planet ~= platform.space_location.name then
-                        if storage.speed_rank[player.name] ~= nil and storage.speed_rank[player.name].weight ~= nil then
-                            local start_planet = storage.speed_rank[player.name].start_planet
-                            local target_planet = platform.space_location.name
-                            local time = (game.tick - storage.speed_rank[player.name].start_time) / 60 -- 秒
-                            local weight = storage.speed_rank[player.name].weight / 1000               -- 吨
-                            if time > 2 and weight > 10 then
-                                local info = get_distance(start_planet, target_planet)                 -- km
-                                local distance = info.distance
-                                local name = info.name
-                                local socre = distance * distance / time / weight -- 分
-                                if storage.speed_rank[player.name][name] == nil or storage.speed_rank[player.name][name].socre < socre then
-                                    storage.speed_rank[player.name][name] = {
-                                        time = time,
-                                        weight = weight,
-                                        socre = socre,
-                                        distance = distance,
-                                    }
-                                    game.print(string.format("%s%s突破了神游[space-location=%s]分数记录(%d), 前往神游榜查看", player
-                                        .name, player.tag, name, socre))
-                                end
-                                if storage.speed_rank[player.name][name].min_time == nil or storage.speed_rank[player.name][name].min_time.time > time then
-                                    storage.speed_rank[player.name][name].min_time = {
-                                        time = time,
-                                        weight = weight,
-                                        socre = socre,
-                                        distance = distance,
-                                    }
-                                    game.print(string.format("%s%s突破了神游[space-location=%s]速度记录(%.2fkm/s), 前往神游榜查看",
-                                        player.name, player.tag, name, distance / time))
-                                end
-                                if storage.speed_rank[player.name][name].min_weight == nil or storage.speed_rank[player.name][name].min_weight.weight > weight then
-                                    storage.speed_rank[player.name][name].min_weight = {
-                                        time = time,
-                                        weight = weight,
-                                        socre = socre,
-                                        distance = distance,
-                                    }
-                                    game.print(string.format("%s%s突破了神游[space-location=%s]重量记录(%.1f吨), 前往神游榜查看",
-                                        player.name, player.tag, name, weight))
-                                end
-
-                                player.print(string.format("神游[space-location=%s]分数:%d,重量:%.1f吨,速度:%.2fkm/s", name, socre,
-                                    weight, distance / time))
-
-                                if platform.space_location.name == "shattered-planet" then
-                                    if storage.speed_rank[player.name].try_time == nil then
-                                        storage.speed_rank[player.name].try_time = 0
-                                    end
-                                    storage.speed_rank[player.name].try_time = storage.speed_rank[player.name].try_time +
-                                        1;
-                                    game.print(string.format("%s%s到达破碎星球，下次速度要求降低50km/s", player.name, player.tag));
-                                end
-
-                                storage.speed_rank[player.name].curr_time = time -- 最近一次耗时
-                                storage.speed_rank[player.name].start_planet = target_planet
+            if platform.space_location ~= nil then     -- 停靠 [planet=nauvis]
+                if storage.speed_rank == nil then
+                    storage.speed_rank = {}
+                end
+                if storage.speed_rank[player.name] == nil then
+                    storage.speed_rank[player.name] = {}
+                end
+                if storage.speed_rank[player.name].start_planet == nil then
+                    storage.speed_rank[player.name].start_planet = platform.space_location.name
+                elseif storage.speed_rank[player.name].start_planet ~= platform.space_location.name then
+                    if storage.speed_rank[player.name] ~= nil and storage.speed_rank[player.name].weight ~= nil then
+                        local start_planet = storage.speed_rank[player.name].start_planet
+                        local target_planet = platform.space_location.name
+                        local time = (game.tick - storage.speed_rank[player.name].start_time) / 60     -- 秒
+                        local weight = storage.speed_rank[player.name].weight / 1000                   -- 吨
+                        if time > 2 and weight > 10 then
+                            local info = get_distance(start_planet, target_planet)                     -- km
+                            local distance = info.distance
+                            local name = info.name
+                            local socre = distance * distance / time / weight     -- 分
+                            if storage.speed_rank[player.name][name] == nil or storage.speed_rank[player.name][name].socre < socre then
+                                storage.speed_rank[player.name][name] = {
+                                    time = time,
+                                    weight = weight,
+                                    socre = socre,
+                                    distance = distance,
+                                }
+                                game.print(string.format("%s%s突破了神游[space-location=%s]分数记录(%d), 前往神游榜查看", player
+                                    .name, player.tag, name, socre))
                             end
+                            if storage.speed_rank[player.name][name].min_time == nil or storage.speed_rank[player.name][name].min_time.time > time then
+                                storage.speed_rank[player.name][name].min_time = {
+                                    time = time,
+                                    weight = weight,
+                                    socre = socre,
+                                    distance = distance,
+                                }
+                                game.print(string.format("%s%s突破了神游[space-location=%s]速度记录(%.2fkm/s), 前往神游榜查看",
+                                    player.name, player.tag, name, distance / time))
+                            end
+                            if storage.speed_rank[player.name][name].min_weight == nil or storage.speed_rank[player.name][name].min_weight.weight > weight then
+                                storage.speed_rank[player.name][name].min_weight = {
+                                    time = time,
+                                    weight = weight,
+                                    socre = socre,
+                                    distance = distance,
+                                }
+                                game.print(string.format("%s%s突破了神游[space-location=%s]重量记录(%.1f吨), 前往神游榜查看",
+                                    player.name, player.tag, name, weight))
+                            end
+
+                            player.print(string.format("神游[space-location=%s]分数:%d,重量:%.1f吨,速度:%.2fkm/s", name, socre,
+                                weight, distance / time))
+
+                            if platform.space_location.name == "shattered-planet" then
+                                if storage.speed_rank[player.name].try_time == nil then
+                                    storage.speed_rank[player.name].try_time = 0
+                                end
+                                storage.speed_rank[player.name].try_time = storage.speed_rank[player.name].try_time +
+                                    1;
+                                game.print(string.format("%s%s到达破碎星球，下次速度要求降低50km/s", player.name, player.tag));
+                            end
+
+                            storage.speed_rank[player.name].curr_time = time     -- 最近一次耗时
+                            storage.speed_rank[player.name].start_planet = target_planet
                         end
                     end
-                    storage.speed_rank[player.name].start_time = game.tick
-                    storage.speed_rank[player.name].weight = 0
-                else -- 飞行
-                    -- 环境速度变化
-                    if storage.speed_set == nil then
-                        storage.speed_set = {}
-                    end
-                    if storage.speed_set[player.name] == nil then
-                        storage.speed_set[player.name] = 0
-                    end
+                end
+                storage.speed_rank[player.name].start_time = game.tick
+                storage.speed_rank[player.name].weight = 0
+            else     -- 飞行
+                -- 环境速度变化
+                if storage.speed_set == nil then
+                    storage.speed_set = {}
+                end
+                if storage.speed_set[player.name] == nil then
+                    storage.speed_set[player.name] = 0
+                end
 
-                    if storage.speed_set[player.name] > 0 and platform.speed > 0 then
-                        platform.speed = storage.speed_set[player.name]
-                    end
+                if storage.speed_set[player.name] > 0 and platform.speed > 0 then
+                    platform.speed = storage.speed_set[player.name]
+                end
 
-                    -- 更新船重
-                    if storage.speed_rank and storage.speed_rank[player.name] then
-                        if storage.speed_rank[player.name].weight == nil then
-                            storage.speed_rank[player.name].weight = platform.weight
-                        elseif platform.weight > storage.speed_rank[player.name].weight then
-                            storage.speed_rank[player.name].weight = platform.weight
-                        end
+                -- 更新船重
+                if storage.speed_rank and storage.speed_rank[player.name] then
+                    if storage.speed_rank[player.name].weight == nil then
+                        storage.speed_rank[player.name].weight = platform.weight
+                    elseif platform.weight > storage.speed_rank[player.name].weight then
+                        storage.speed_rank[player.name].weight = platform.weight
                     end
                 end
             end

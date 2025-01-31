@@ -106,7 +106,7 @@ local function show_joined_player_ui(player)
     frame.add {
         type = "checkbox",
         name = "allow_join_checkbox",
-        caption = "允许加入宗门",
+        caption = "允许他人加入宗门",
         state = storage.forceInfos[player.force.name].canJoin
     }
 end
@@ -151,7 +151,7 @@ local function show_team_manage(player)
     button_flow.add {
         type = "button",
         name = "teleport_to_spawn",
-        caption = "返回宗门",
+        caption = "回到宗门",
         style = "confirm_button"
     }
 
@@ -167,7 +167,7 @@ local function show_team_manage(player)
     button_flow.add {
         type = "button",
         name = "leave_team",
-        caption = "离开宗门",
+        caption = "退出宗门",
         style = "confirm_button"
     }
 
@@ -1061,9 +1061,12 @@ local function create_new_team(player, team_name)
     player.character_crafting_speed_modifier = (index - 1) * 0.5
     player.character_mining_speed_modifier = (index - 1) * 0.5
 
-
     -- 插入100木头
     player.insert { name = "wood", count = 100 }
+    player.insert { name = "modular-armor", count = 1 }
+    player.insert { name = "personal-roboport-equipment", count = 1 }
+    player.insert { name = "solar-panel-equipment", count = 2 }
+    player.insert { name = "construction-robot", count = 10 }
 
     show_joined_player_ui(player)
 
@@ -1393,11 +1396,28 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     -- game.permissions.get_group('Default').set_allows_action(defines.input_action.open_blueprint_library_gui, canBluePrint)
     -- game.permissions.get_group('Default').set_allows_action(defines.input_action.activate_paste, canBluePrint)
 
+    local player = game.get_player(event.player_index)
 
-    game.print("1、宗门72小时无人上线将被清理!")
-    game.print("2、聊天框输入:速度100,设置所在仙舟速度为100km/s(境界越高,可设置速度越快，速度0取消定速)")
-    game.print("3、聊天框输入:在线的人，查看在线的人的位置")
-    game.print("4、聊天框输入:飞行的船，查看飞行的船的位置")
+    local hour_to_tick = 216000
+    local welcome = {}
+    if player.online_time > 0 then
+        local last_delta = math.max(0, math.floor((game.tick - player.last_online) / hour_to_tick))
+        local total_time = math.max(0, math.floor(player.online_time / hour_to_tick))
+        welcome = {
+            "welcome-player", player.name,
+            total_time,
+            last_delta
+        }
+    else
+        welcome = { "welcome-new-player", player.name }
+    end
+    game.print(welcome)
+
+    if #game.connected_players > 0 then
+        player.print("聊天框输入:在线的人，查看在线的人的位置")
+        player.print("聊天框输入:飞行的船，查看飞行的船的位置")
+    end
+
 
     -- 火箭射速增加
     if storage.speed_rank == nil then
