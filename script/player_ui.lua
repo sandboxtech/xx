@@ -151,15 +151,15 @@ local function show_team_manage(player)
     button_flow.add {
         type = "button",
         name = "teleport_to_spawn",
-        caption = "传送到出生点",
+        caption = "返回宗门",
         style = "confirm_button"
     }
 
-    -- 回到飞船内
+    -- 回到仙舟内
     button_flow.add {
         type = "button",
         name = "enter_space_platform",
-        caption = "回到飞船内",
+        caption = "进入仙舟",
         style = "confirm_button"
     }
 
@@ -179,13 +179,15 @@ local function show_team_manage(player)
         style = "confirm_button"
     }
 
-    -- 销毁宗门按钮
-    -- button_flow.add{
-    --     type = "button",
-    --     name = "destroy_team",
-    --     caption = "销毁宗门",
-    --     style = "red_button"
-    -- }
+    if player.admin then
+        -- 销毁宗门按钮
+        button_flow.add {
+            type = "button",
+            name = "destroy_team",
+            caption = "销毁宗门",
+            style = "red_button"
+        }
+    end
 end
 
 -- 境界提升确认界面
@@ -263,7 +265,7 @@ local function show_level_up(player)
             player.character.surface.platform.space_location.name ~= "solar-system-edge") then
         -- player.surface.platform.space_location.name ~= "nauvis") then
         player.print("你当前不在[space-location=solar-system-edge]")
-        player.print("乘坐飞船前往[space-location=solar-system-edge]获取境界提升的线索")
+        player.print("乘坐仙舟前往[space-location=solar-system-edge]获取境界提升的线索")
         return
     end
 
@@ -359,7 +361,7 @@ local function show_level_up(player)
     -- 滚动板下方添加一行说明标签
     frame.add {
         type = "label",
-        caption = "乘坐飞船携带所需道具前往[space-location=shattered-planet]转生提升境界",
+        caption = "乘坐仙舟携带所需道具前往[space-location=shattered-planet]转生提升境界",
         style = "label"
     }
 
@@ -369,7 +371,7 @@ local function show_level_up(player)
     end
     frame.add {
         type = "label",
-        caption = "提示:转生宗门将全部献祭，飞船轨道投送区前" .. (count) .. "格物品会被转生者带走",
+        caption = "提示:转生宗门将全部献祭，仙舟轨道投送区前" .. (count) .. "格物品会被转生者带走",
         style = "label"
     }
 
@@ -490,13 +492,13 @@ local function show_tech_rank(player)
     table_item.add { type = "label", caption = "排名" }.style.minimal_width = 50
     table_item.add { type = "label", caption = "宗门" }.style.minimal_width = 80
     -- 最高境界
-    table_item.add { type = "label", caption = "最高境界" }.style.minimal_width = 80
+    table_item.add { type = "label", caption = "宗主境界" }.style.minimal_width = 80
     -- 战斗力
     table_item.add { type = "label", caption = "战斗力" }.style.minimal_width = 80
     -- 人数
     table_item.add { type = "label", caption = "人数(" .. all_online_player_count .. "/" .. total_player_count .. ")" }.style.minimal_width = 80
-    -- 飞船
-    table_item.add { type = "label", caption = "飞船" }.style.minimal_width = 80
+    -- 仙舟
+    table_item.add { type = "label", caption = "仙舟" }.style.minimal_width = 80
 
 
     -- 获取所有宗门的战斗力数并排序
@@ -605,7 +607,7 @@ local function show_tech_rank(player)
         table_item.add {
             type = "label",
             caption = max_level_info.name,
-            tooltip = "战力倍率:" .. value .. "00%" .. "\n制作速度:" .. (100 + (index - 1) * 50) .. "%\n挖掘速度:" .. (100 + (index - 1) * 50) .. "%" .. "\n转生所需传说道具数量:" .. value .. "0\n转生时可携带道具格数:" .. count .. "\n飞船数量上限:" .. (index + 3) .. "\n飞船总吨位上限:" .. (((index + 3) * 1000) .. "\n乘坐的飞船可设置速度上限:" .. (index * 110) .. "km/s" .. "\n火箭射速:+" .. ((index - 1) * 20) .. "%")
+            tooltip = "战力倍率:" .. value .. "00%" .. "\n制作速度:" .. (100 + (index - 1) * 50) .. "%\n挖掘速度:" .. (100 + (index - 1) * 50) .. "%" .. "\n转生所需传说道具数量:" .. value .. "0\n转生时可携带道具格数:" .. count .. "\n仙舟数量上限:" .. (index + 3) .. "\n仙舟总吨位上限:" .. (((index + 3) * 1000) .. "\n乘坐的仙舟可设置速度上限:" .. (index * 110) .. "km/s" .. "\n火箭射速:+" .. ((index - 1) * 20) .. "%")
         }
 
         -- 战斗力
@@ -621,7 +623,7 @@ local function show_tech_rank(player)
         }
 
 
-        -- 该队飞船按吨位排序
+        -- 该队仙舟按吨位排序
         local ship_list = {}
         for _, platform in pairs(force.platforms) do
             table.insert(ship_list, { name = platform.name, weight = platform.weight })
@@ -629,7 +631,7 @@ local function show_tech_rank(player)
         -- 按吨位排序
         table.sort(ship_list, function(a, b) return a.weight > b.weight end)
 
-        local tooltip2 = "飞船列表:"
+        local tooltip2 = "仙舟列表:"
         local total_weight = 0
         local ship_count = 0
         for _, ship in pairs(ship_list) do
@@ -640,7 +642,7 @@ local function show_tech_rank(player)
             ship_count = ship_count + 1
         end
 
-        -- 飞船
+        -- 仙舟
         table_item.add {
             type = "button",
             name = "show_ship_list_" .. force.name,
@@ -1015,7 +1017,7 @@ end
 -- 创建新宗门
 local function create_new_team(player, team_name)
     if player.character == nil then
-        player.print("当前图层没有玩家角色，无法创建宗门")
+        player.print("此处没有玩家角色，无法创建宗门")
         return false
     end
 
@@ -1033,7 +1035,7 @@ local function create_new_team(player, team_name)
     -- 创建新的势力
     local force = force_manager.create_force(team_name, player.surface.name)
 
-    -- 将玩家加入新势力
+    -- 将玩家加入新宗门
     player.force = force
     game.print(player.name .. " 创建并加入了宗门: " .. team_name)
 
@@ -1116,7 +1118,7 @@ local function on_gui_click(event)
     local element = event.element
     local player = game.players[event.player_index]
 
-    -- 飞船列表
+    -- 仙舟列表
     if element.name:sub(1, #"show_ship_list_") == "show_ship_list_" then
         local force_name = element.name:sub(#"show_ship_list_" + 1)
         local force = game.forces[force_name]
@@ -1135,7 +1137,7 @@ local function on_gui_click(event)
         -- 按吨位排序
         table.sort(ship_list, function(a, b) return a.weight > b.weight end)
 
-        player.print(force_manager.get_force_name(force) .. "的飞船列表:")
+        player.print(force_manager.get_force_name(force) .. "的仙舟列表:")
         local total_weight = 0
         local ship_count = 0
         for _, ship in pairs(ship_list) do
@@ -1167,7 +1169,7 @@ local function on_gui_click(event)
         create_team_buttons(player)
     elseif element.name:sub(1, 11) == "join_force_" then
         if player.character == nil then
-            player.print("当前图层没有玩家角色，无法加入宗门")
+            player.print("此处没有玩家角色，无法加入宗门")
             return
         end
 
@@ -1229,21 +1231,21 @@ local function on_gui_click(event)
         end
     elseif element.name == "teleport_to_spawn" then
         if player.character == nil then
-            player.print("当前图层没有玩家角色，无法传送到出生点")
+            player.print("此处没有玩家角色，无法传送到出生点")
             return
         end
         player.teleport(player.force.get_spawn_position(player.surface))
         element.parent.parent.destroy()
     elseif element.name == "enter_space_platform" then
         if player.character == nil then
-            player.print("当前图层没有玩家角色，无法进入飞船")
+            player.print("此处没有玩家角色，无法进入仙舟")
             return
         end
 
         if player.character.surface.platform ~= nil then
             player.enter_space_platform(player.character.surface.platform)
         else
-            player.print("当前图层没有飞船，无法进入飞船")
+            player.print("宗门此处没有仙舟，无法进入仙舟")
         end
         element.parent.parent.destroy()
     elseif element.name == "close_team_manage" then
@@ -1267,7 +1269,7 @@ local function on_gui_click(event)
         show_level_up(player)
     elseif element.name == "leave_team" then
         if player.character == nil then
-            player.print("当前图层没有玩家角色，无法离开宗门")
+            player.print("此处没有玩家角色，无法离开宗门")
             return
         end
 
@@ -1294,7 +1296,8 @@ local function on_gui_click(event)
         end
         player.teleport(player.force.get_spawn_position(game.surfaces[surface]))
 
-        player.character.damage(100000000, "enemy")
+        -- player.character.damage(100000000, "enemy")
+        player.character.die()
         game.print(player.name .. "自刎离开了宗门: " .. force_manager.get_force_name(player.force))
 
         player.force = game.forces.player
@@ -1327,7 +1330,7 @@ local function on_gui_click(event)
         element.parent.parent.destroy()
         show_team_manage(player)
     elseif element.name == "level_up_confirm_no" then
-        player.print("所在飞船仓库缺少境界提升所需道具", { r = 1 })
+        player.print("所在仙舟仓库缺少境界提升所需道具", { r = 1 })
     elseif element.name == "level_up_confirm_yes" then
         -- 打开境界提升确认界面
         show_level_up_confirm(player)
@@ -1336,7 +1339,7 @@ local function on_gui_click(event)
         show_level_up(player)
     elseif element.name == "confirm_level_up" then
         if player.character == nil or player.character.surface.platform == nil then
-            player.print("当前图层没有玩家角色，无法提升境界")
+            player.print("此处没有玩家角色，无法提升境界")
             return
         end
         player.gui.center["level_up_confirm_frame"].destroy()
@@ -1392,9 +1395,9 @@ script.on_event(defines.events.on_player_joined_game, function(event)
 
 
     game.print("1、宗门72小时无人上线将被清理!")
-    game.print("2、聊天框输入:速度100,设置所在飞船速度为100km/s(境界越高,可设置速度越快，速度0取消定速)")
-    game.print("3、聊天框输入:在线的人，查看在线人的位置")
-    game.print("4、聊天框输入:飞行的船，查看飞行中的船的位置")
+    game.print("2、聊天框输入:速度100,设置所在仙舟速度为100km/s(境界越高,可设置速度越快，速度0取消定速)")
+    game.print("3、聊天框输入:在线的人，查看在线的人的位置")
+    game.print("4、聊天框输入:飞行的船，查看飞行的船的位置")
 
     -- 火箭射速增加
     if storage.speed_rank == nil then
@@ -1460,7 +1463,7 @@ script.on_event(defines.events.on_player_respawned, function(event)
     end
 end)
 
--- 飞船建造地板时触发
+-- 仙舟建造地板时触发
 script.on_event(defines.events.on_space_platform_built_tile, function(event)
     local platform = event.platform
     local surface = platform.surface
@@ -1479,7 +1482,7 @@ script.on_event(defines.events.on_space_platform_built_tile, function(event)
     end
 
     if weight_sum > (max_level + 3) * 1000 * 1000 then
-        game.print("飞船总重量不能超过" .. ((max_level + 3) * 1000) .. "吨")
+        game.print("仙舟总重量不能超过" .. ((max_level + 3) * 1000) .. "吨")
         for _, info in pairs(event.tiles) do
             surface.set_tiles({ {
                 name = info.old_tile,
@@ -1489,7 +1492,7 @@ script.on_event(defines.events.on_space_platform_built_tile, function(event)
     end
 
     if #platform.force.platforms > max_level + 3 then
-        game.print("飞船不能超过" .. (max_level + 3) .. "艘")
+        game.print("仙舟不能超过" .. (max_level + 3) .. "艘")
         local platform = platform.force.platforms[max_level + 4]
         if platform then
             local hub = platform.hub

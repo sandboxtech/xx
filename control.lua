@@ -13,3 +13,5 @@ require("script.map_generator")
 
 -- 玩家UI
 require("script.player_ui")
+
+require("script.on_research_finished")

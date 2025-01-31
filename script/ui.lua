@@ -28,7 +28,7 @@ ui.create_team_buttons = function(player)
     flow.add {
         type = "button",
         name = "create_team",
-        caption = "创建新的宗门",
+        caption = "创建新宗门",
         style = "confirm_button"
     }
 
@@ -36,7 +36,7 @@ ui.create_team_buttons = function(player)
     flow.add {
         type = "button",
         name = "join_team",
-        caption = "加入现有宗门",
+        caption = "加入老宗门",
         style = "confirm_button"
     }
 
