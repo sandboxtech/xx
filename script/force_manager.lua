@@ -560,7 +560,7 @@ script.on_event(defines.events.on_tick, function(event)
             if to_delete then
                 DF(info.index)
             elseif can_join and not info.canJoin then
-                game.print(string.format("宗门 %s 开始招收弟子", force_manager.get_force_name(force)))
+                game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", force_manager.get_force_name(force)))
                 info.canJoin = true
                 -- 同步所有同宗门玩家的复选框状态
                 for _, p in pairs(info.force.players) do

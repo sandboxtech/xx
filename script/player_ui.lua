@@ -371,7 +371,7 @@ local function show_level_up(player)
     end
     frame.add {
         type = "label",
-        caption = "提示:转生宗门将全部献祭，仙舟轨道投送区前" .. (count) .. "格物品会被转生者带走",
+        caption = "提示:转生将献祭宗门，仙舟轨道投送区前" .. (count) .. "格物品会被转生者带走",
         style = "label"
     }
 
@@ -607,7 +607,18 @@ local function show_tech_rank(player)
         table_item.add {
             type = "label",
             caption = max_level_info.name,
-            tooltip = "战力倍率:" .. value .. "00%" .. "\n制作速度:" .. (100 + (index - 1) * 50) .. "%\n挖掘速度:" .. (100 + (index - 1) * 50) .. "%" .. "\n转生所需传说道具数量:" .. value .. "0\n转生时可携带道具格数:" .. count .. "\n仙舟数量上限:" .. (index + 3) .. "\n仙舟总吨位上限:" .. (((index + 3) * 1000) .. "\n乘坐的仙舟可设置速度上限:" .. (index * 110) .. "km/s" .. "\n火箭射速:+" .. ((index - 1) * 20) .. "%")
+            tooltip = "战力倍率:" 
+            .. value .. "00%" 
+            .. "\n制作速度:" 
+            .. (100 + (index - 1) * 50) 
+            .. "%\n挖掘速度:" 
+            .. (100 + (index - 1) * 50) .. "%" 
+            .. "\n转生所需传说道具数量:" .. value 
+            .. "0\n转生时可携带道具格数:" .. count 
+            .. "\n仙舟数量上限:" .. (index + 3) 
+            .. "\n仙舟总吨位上限:" .. (((index + 3) * 1000) 
+            .. "\n乘坐的仙舟可设置速度上限:" .. (index * 110) 
+            .. "km/s" .. "\n火箭射速:+" .. ((index - 1) * 20) .. "%")
         }
 
         -- 战斗力
