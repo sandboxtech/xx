@@ -236,11 +236,13 @@ end
 -- 销毁宗门
 force_manager.destroy_force = function(force, no_clear_inside)
     local name = force_manager.get_force_name(force)
-    game.print("▣ 宗门 [color=yellow]" .. name .. "[/color] 湮灭于[color=#ff6666]归墟[/color] ▣")
+    game.print("宗门 [color=yellow]" .. name .. "[/color] 湮灭于[color=#ff6666]归墟[/color]")
     -- 宗门玩家改为player宗门
     for _, player in pairs(force.players) do
         -- 关闭已加入玩家界面
         if player.gui.left["joined_team_frame"] then player.gui.left["joined_team_frame"].destroy() end
+
+        game.print("道友 [color=yellow]" .. player.name .. "[/color] 转生，未能提升境界")
 
         -- 创建玩家界面
         ui.create_team_buttons(player)
@@ -368,10 +370,103 @@ local random_messages = {
     "※ 宗门十日无人，当坠[color=#ff6666]归墟[/color]湮灭于星海",
     "▶ 输入「神识感应」可查诸天同道方位",
     "▶ 输入「观星寻舟」可窥虚空仙舰轨迹",
+    "▶ 输入「钓鱼」「伐木」「采矿」「采药」「寻宝」",
 }
 
 function print_random_message()
     game.print(random_messages[math.random(#random_messages)])
+end
+
+-- 鱼类采集
+local fish_locations = {
+    "碧波潭", "忘川河", "星海秘境",
+    "九幽寒渊", "天河瀑布", "蓬莱仙池",
+    "归墟海眼", "瑶池", "弱水河畔",
+}
+
+-- 木材采集
+local wood_locations = {
+    "青冥山", "紫霞岭", "玄雾峰",
+    "落星崖", "云梦泽", "栖凤谷",
+    "神木林", "建木遗迹", "梧桐仙谷",
+    "蟠桃园", "紫竹林", "昆仑墟",
+    "扶桑古地", "菩提道场", "太乙仙林"
+}
+
+-- 矿石采集
+local ore_names = {
+    "uranium-ore", "coal", "stone",
+    "iron-ore", "copper-ore",
+    "tungsten-ore",
+    "calcite",
+    "holmium-ore",
+}
+-- 矿石采集
+local ore_locations = {
+    "玄铁矿脉", "赤铜山洞", "星辰矿洞",
+    "九幽冥窟", "天外陨坑", "紫晶山脉",
+    "九幽冥窟", "天外陨坑", "紫晶山脉",
+    "太初古矿", "归墟深渊", "混沌裂隙"
+}
+
+-- 灵药采集
+local herb_locations = {
+    "百草园", "药王谷", "神农秘境",
+    "太虚药田", "九转灵圃", "紫霄药园",
+    "归墟药海", "混沌药界", "天机药圃"
+}
+
+local herb_names = {
+    "yumako", "jellynut", "wood", "spoilage",
+}
+
+local treasure_locations = {
+    -- 天象异变
+    "九星连珠之地", "血月映照之渊", "日蚀中心",
+    "流星雨落点", "极光交汇处", "混沌潮汐眼",
+
+    -- 时空异常
+    "时间长河支流", "空间裂隙节点", "平行世界入口",
+    "轮回隧道", "命运交织点", "因果律异常区"
+}
+
+local treasure_names = {
+    "scrap", "scrap", "scrap", "scrap", "scrap", "scrap", "scrap",
+    -- "beacon",
+    -- "medium-electric-pole",
+    -- "productivity-module",
+    -- "quality-module",
+    -- "efficiency-module",
+    -- "qualitspeedy-module",
+    -- "electric-mining-drill",
+    -- "beacon",
+    -- "solar-panel-equipment",
+    -- "construction-robot", "logistic-robot",
+    -- "solar-panel-equipment",
+}
+
+local random_qualities = {
+    "normal", "normal", "normal", "uncommon",
+    "normal", "normal", "normal", "uncommon",
+    "normal", "normal", "normal", "uncommon",
+    "normal", "normal", "normal", "uncommon",
+    "normal", "normal", "normal", "uncommon",
+    "normal", "normal", "normal", "uncommon",
+    "rare", "rare", "rare", "epic",
+}
+
+
+local give_item = function(player, name, location, count)
+    if not count then count = 1 end
+    if not quality then quality = "normal" end
+    player.insert { name = name, count = 1 }
+    game.print("道友[color=yellow]" .. player.name
+        .. "[/color]于" .. location
+        .. "获得[item=" .. name .. ",quality=" .. random_qualities[math.random(#random_qualities)] .. "]")
+end
+
+local seed_location = function(locations, seed)
+    return locations[math.floor((game.tick / seed)) % #locations + 1]
 end
 
 -- 聊天时触发
@@ -383,25 +478,53 @@ script.on_event(defines.events.on_console_chat, function(event)
     local player = game.get_player(event.player_index)
     if not player then return end
 
+    if player.force == game.forces.player then return end
+
     local message = event.message
 
-    if message:sub(1, 3) == "修" then
+
+    if message == "修仙" or message == "帮助" or message == "help" then
         print_random_message()
         return
     end
 
-    if message == "修仙" then
-        print_random_message()
-        return
-    end
-
-    if message == "神识感应" or event.message == "在线的人" then
+    if message == "神识感应" or message == "在线的人" then
         show_online_player_postion(player)
         return
     end
 
-    if event.message == "观星寻舟" or event.message == "飞行的船" then
+    if message == "观星寻舟" or message == "飞行的船" then
         show_move_platform(player)
+        return
+    end
+
+    if message == "钓鱼" then
+        local count = math.random(-3, 1)
+        if count > 0 then
+            give_item(player, 'raw-fish', seed_location(fish_locations, 1230))
+        else
+            game.print("道友[color=yellow]" .. player.name .. "[/color]一无所获")
+        end
+        return
+    end
+
+    if message == "伐木" or message == "砍树" then
+        give_item(player, 'wood', seed_location(wood_locations, 1231))
+        return
+    end
+
+    if message == "采矿" or message == "采石"  or message == "挖矿"  then
+        give_item(player, ore_names[math.random(#ore_names)], seed_location(ore_locations, 1232))
+        return
+    end
+
+    if message == "采药" then
+        give_item(player, herb_names[math.random(#herb_names)], seed_location(herb_locations, 1233))
+        return
+    end
+
+    if message == "寻宝" then
+        give_item(player, treasure_names[math.random(#treasure_names)], seed_location(treasure_locations, 1234))
         return
     end
 
@@ -536,7 +659,7 @@ script.on_event(defines.events.on_tick, function(event)
 
             local time_left = time_max - min_offline_time
 
-            local name =force_manager.get_force_name(force)
+            local name = force_manager.get_force_name(force)
             if time_left == 24 then
                 if not info.canJoin then
                     game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", name))
