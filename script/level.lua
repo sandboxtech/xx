@@ -88,13 +88,13 @@ end
 local get_name = function(index, isbracket)
     local colors = { -- 白绿蓝紫橙红粉金
         [1] = "#ffffff",
-        [2] = "#00ff00",
-        [3] = "#00BFFF",
-        [4] = "#ff00ff",
-        [5] = "#ffa500",
-        [6] = "#ff0000",
+        [2] = "#33ff33",
+        [3] = "#33BFFF",
+        [4] = "#ff33ff",
+        [5] = "#ffa533",
+        [6] = "#ff3333",
         [7] = "#ffc0cb",
-        [8] = "#ffd700",
+        [8] = "#ffd733",
     }
 
     local name = ""

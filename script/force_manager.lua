@@ -235,7 +235,8 @@ end
 
 -- 销毁宗门
 force_manager.destroy_force = function(force, no_clear_inside)
-    game.print("▣ 宗门 " .. force_manager.get_force_name(force) .. " 湮灭于归墟 ▣")
+    local name = force_manager.get_force_name(force)
+    game.print("▣ 宗门 [color=yellow]" .. name .. "[/color] 湮灭于[color=#ff6666]归墟[/color] ▣")
     -- 宗门玩家改为player宗门
     for _, player in pairs(force.players) do
         -- 关闭已加入玩家界面
@@ -361,7 +362,7 @@ local random_messages = {
     "※ 踏以器证道，以厂入圣 ※",
     "※ 踏筑自动化洞府生产线，开宗立派广纳门众 ※",
     "※ 踏碎虚空至星域边界者，可献祭宗门进行转生",
-    "※ 宗门十日无人，当坠归墟湮灭于星海",
+    "※ 宗门十日无人，当坠[color=#ff6666]归墟[/color]湮灭于星海",
     "▶ 输入「神识感应」可查诸天同道方位",
     "▶ 输入「观星寻舟」可窥虚空仙舰轨迹",
 }
@@ -558,11 +559,11 @@ script.on_event(defines.events.on_tick, function(event)
 
             if to_delete then
                 DF(info.index)
-            elseif can_join then
+            elseif can_join and not info.canJoin then
                 game.print(string.format("宗门 %s 开始招收弟子", force_manager.get_force_name(force)))
                 info.canJoin = true
                 -- 同步所有同宗门玩家的复选框状态
-                for _, p in pairs(force_info.force.players) do
+                for _, p in pairs(info.force.players) do
                     if p.gui.left["joined_team_frame"] then
                         p.gui.left["joined_team_frame"]["allow_join_checkbox"].state = true
                     end
@@ -896,7 +897,8 @@ script.on_event(defines.events.on_entity_settings_pasted, function(event)
         -- 检查目标实体是否属于其他势力
         if destination.force ~= player.force then
             -- 提示玩家
-            game.print(string.format("▣ 不能通过复制设置修改其他宗门设施[gps=%d,%d,%s] ▣ %s", destination.position.x, destination.position.y,
+            game.print(string.format("▣ 不能通过复制设置修改其他宗门设施[gps=%d,%d,%s] ▣ %s", destination.position.x,
+            destination.position.y,
                 destination.surface.name, player.name))
             game.print(string.format("▣ %s已被杀死，大家不要学他 ▣", player.name))
             -- 杀死这样操作的玩家

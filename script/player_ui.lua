@@ -1287,9 +1287,9 @@ local function on_gui_click(event)
             end
         end
         if force_info.canJoin then
-            game.print(string.format("宗门 %s 开始招收弟子", force_manager.get_force_name(force)))
+            game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", force_manager.get_force_name(force)))
         else
-            game.print(string.format("宗门 %s 停止招收弟子", force_manager.get_force_name(force)))
+            game.print(string.format("宗门 [color=yellow]%s[/color] 停止招收弟子", force_manager.get_force_name(force)))
         end
 
 
@@ -1320,15 +1320,15 @@ local function on_gui_click(event)
             local old_name = storage.forceInfos[player.force.name].name
             -- 检查新名称是否已存在
             if #new_name > 40 then
-                player.print("你的宗门名太长了", { r = 1 })
+                player.print("宗门名号过长，恐难载于三生石", { r = 1 })
                 return
             elseif force_manager.is_force_name_exist(new_name) then
-                player.print("宗门名称已存在，请重新输入", { r = 1 })
+                player.print("宗门名号已载于三生石，请另择仙缘", { r = 1 })
                 return
             end
             -- 更新宗门名称
             storage.forceInfos[player.force.name].name = new_name
-            game.print(string.format("宗门 %s 改名为 %s", old_name, new_name))
+            game.print(string.format("宗门 [color=yellow]%s[/color] 改名为 [color=yellow]%s[/color]", old_name, new_name))
             element.parent.parent.destroy()
             show_joined_player_ui(player)
         else
@@ -1389,6 +1389,10 @@ local function on_gui_click(event)
     end
 end
 
+local get_time_str = function (ke)
+    local k = ke % 4
+
+end
 
 -- 当玩家加入游戏时显示按钮
 script.on_event(defines.events.on_player_joined_game, function(event)
@@ -1478,9 +1482,9 @@ script.on_event(defines.events.on_gui_checked_state_changed, function(event)
     if element.name == "allow_join_checkbox" then
         storage.forceInfos[player.force.name].canJoin = element.state
         if element.state then
-            game.print(string.format("宗门 %s 开始招收弟子", force_manager.get_force_name(player.force)))
+            game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", force_manager.get_force_name(player.force)))
         else
-            game.print(string.format("宗门 %s 停止招收弟子", force_manager.get_force_name(player.force)))
+            game.print(string.format("宗门 [color=yellow]%s[/color] 停止招收弟子", force_manager.get_force_name(player.force)))
         end
 
         -- 同步所有同宗门玩家的复选框状态
