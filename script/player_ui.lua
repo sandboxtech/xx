@@ -607,18 +607,18 @@ local function show_tech_rank(player)
         table_item.add {
             type = "label",
             caption = max_level_info.name,
-            tooltip = "战力倍率:" 
-            .. value .. "00%" 
-            .. "\n制作速度:" 
-            .. (100 + (index - 1) * 50) 
-            .. "%\n挖掘速度:" 
-            .. (100 + (index - 1) * 50) .. "%" 
-            .. "\n转生所需传说道具数量:" .. value 
-            .. "0\n转生时可携带道具格数:" .. count 
-            .. "\n仙舟数量上限:" .. (index + 3) 
-            .. "\n仙舟总吨位上限:" .. (((index + 3) * 1000) 
-            .. "\n乘坐的仙舟可设置速度上限:" .. (index * 110) 
-            .. "km/s" .. "\n火箭射速:+" .. ((index - 1) * 20) .. "%")
+            tooltip = "战力倍率:"
+                .. value .. "00%"
+                .. "\n制作速度:"
+                .. (100 + (index - 1) * 50)
+                .. "%\n挖掘速度:"
+                .. (100 + (index - 1) * 50) .. "%"
+                .. "\n转生所需传说道具数量:" .. value
+                .. "0\n转生时可携带道具格数:" .. count
+                .. "\n仙舟数量上限:" .. (index + 3)
+                .. "\n仙舟总吨位上限:" .. (((index + 3) * 1000)
+                    .. "\n乘坐的仙舟可设置速度上限:" .. (index * 110)
+                    .. "km/s" .. "\n火箭射速:+" .. ((index - 1) * 20) .. "%")
         }
 
         -- 战斗力
@@ -1400,9 +1400,12 @@ local function on_gui_click(event)
     end
 end
 
-local get_time_str = function (ke)
-    local k = ke % 4
-
+local time_table_shichen = { "子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥" }
+local time_table_shike = { "一", "二", "三", "四", "五", "六", "七", "八", }
+local get_time_str = function(tick)
+    local shichen = math.floor(tick / (120 * 60 * 60)) % 12
+    local shike = math.floor(tick / (15 * 60 * 60)) % 8
+    return string.format("%s时%s刻", time_table_shichen[1 + shichen], time_table_shike[1 + shike])
 end
 
 -- 当玩家加入游戏时显示按钮
@@ -1419,14 +1422,13 @@ script.on_event(defines.events.on_player_joined_game, function(event)
 
     local player = game.get_player(event.player_index)
 
-    local hour_to_tick = 15 * 60 * 60 -- 54000
+    local ke_to_tick = 15 * 60 * 60 -- 54000
     if player.online_time > 0 then
-        local last_delta = math.max(0, math.floor((game.tick - player.last_online) / hour_to_tick))
-        local total_time = math.max(0, math.floor(player.online_time / hour_to_tick))
+        local last_delta = math.max(0, math.floor((game.tick - player.last_online) / ke_to_tick))
+        local total_time = math.max(0, math.floor(player.online_time / ke_to_tick))
         game.print(string.format("欢迎 %s 道友重临星域！\n在线时长 %i 刻\n距离上次登录 %i 刻", player.name, total_time, last_delta))
 
-        -- 当前星域时辰：卯时三刻 在线修士：427/500
-        player.print(string.format("当前星域时辰 %i 刻", math.floor(game.tick % hour_to_tick)))
+        game.print(get_time_str(game.tick))
     else
         game.print(string.format("欢迎 %s 道友光临星域", player.name))
         player.print("▶ 输入「修仙」阅读〖星域修仙录〗")

@@ -495,10 +495,11 @@ end
 
 -- 每帧调用
 script.on_event(defines.events.on_tick, function(event)
-    if event.tick % 6 * 60 == 0 then
-        -- if event.tick % 60 * 60 * 60 == 0 then
+    if event.tick % (12 * 60 * 60) == 0 then
         game.reset_time_played()
+    end
 
+    if event.tick % (60 * 60) == 0 then
         -- 删除无人宗门
         -- local list = {}
         for _, info in pairs(storage.forceInfos) do
@@ -898,7 +899,7 @@ script.on_event(defines.events.on_entity_settings_pasted, function(event)
         if destination.force ~= player.force then
             -- 提示玩家
             game.print(string.format("▣ 不能通过复制设置修改其他宗门设施[gps=%d,%d,%s] ▣ %s", destination.position.x,
-            destination.position.y,
+                destination.position.y,
                 destination.surface.name, player.name))
             game.print(string.format("▣ %s已被杀死，大家不要学他 ▣", player.name))
             -- 杀死这样操作的玩家
