@@ -235,7 +235,7 @@ end
 
 -- 销毁宗门
 force_manager.destroy_force = function(force, no_clear_inside)
-    game.print("宗门 " .. force_manager.get_force_name(force) .. " 陨落")
+    game.print("▣ 宗门 " .. force_manager.get_force_name(force) .. " 湮灭于归墟 ▣")
     -- 宗门玩家改为player宗门
     for _, player in pairs(force.players) do
         -- 关闭已加入玩家界面
@@ -355,6 +355,20 @@ local function show_move_platform(player_print)
     end
 end
 
+local random_messages = {
+    -- "※（天机符）、〓（天道碑）、▣（禁制印）",
+    "※ 踏采星髓铸玄铁，炼灵脉为产线 ※",
+    "※ 踏以器证道，以厂入圣 ※",
+    "※ 踏筑自动化洞府生产线，开宗立派广纳门众 ※",
+    "※ 踏碎虚空至星域边界者，可献祭宗门进行转生",
+    "※ 宗门十日无人，当坠归墟湮灭于星海",
+    "▶ 输入「神识感应」可查诸天同道方位",
+    "▶ 输入「观星寻舟」可窥虚空仙舰轨迹",
+}
+
+function print_random_message()
+    game.print(random_messages[math.random(#random_messages)])
+end
 
 -- 聊天时触发
 script.on_event(defines.events.on_console_chat, function(event)
@@ -365,12 +379,24 @@ script.on_event(defines.events.on_console_chat, function(event)
     local player = game.get_player(event.player_index)
     if not player then return end
 
-    if event.message:sub(1, 12) == "神识感应" then
+    local message = event.message
+
+    if message:sub(1, 3) == "修" then
+        print_random_message()
+        return
+    end
+
+    if message == "修仙" then
+        print_random_message()
+        return
+    end
+
+    if message == "神识感应" or event.message == "在线的人" then
         show_online_player_postion(player)
         return
     end
 
-    if event.message:sub(1, 12) == "观星寻舟" then
+    if event.message == "观星寻舟" or event.message == "飞行的船" then
         show_move_platform(player)
         return
     end
@@ -392,13 +418,13 @@ script.on_event(defines.events.on_console_chat, function(event)
                 storage.speed_set = {}
             end
             storage.speed_set[player.name] = level.get_speed(speed) / 60
-            game.print(string.format("%s%s设置所在仙舟速度为%.2fkm/s", player.name, player.tag, speed))
+            player.print(string.format("%s%s设置所在仙舟速度为%.2fkm/s", player.name, player.tag, speed))
         end
     end
 
     -- 自定义消息格式
     local force_name = force_manager.get_force_name(player.force)
-    local custom_message = string.format("%s 的 %s%s: %s 说", force_name, player.name, player.tag, event.message)
+    local custom_message = string.format("%s %s%s: %s", force_name, player.name, player.tag, event.message)
 
     -- 广播自定义消息给所有其他宗门和player
     for _, forceInfo in pairs(storage.forceInfos) do
@@ -428,7 +454,7 @@ DC = function()
             end
         end
     end
-    game.print(string.format("计划回收地块数量:%d", #storage.dc_list))
+    game.print(string.format("▣ 计划回收地块数量:%d ▣", #storage.dc_list))
 end
 
 -- 清空神游记录
@@ -548,7 +574,7 @@ script.on_event(defines.events.on_tick, function(event)
     -- 回收地块
     if storage.dc_list ~= nil and #storage.dc_list > 0 then
         if event.tick % 600 == 0 then
-            game.print(string.format("剩余回收地块数量: %d", #storage.dc_list))
+            game.print(string.format("▣ 剩余回收地块数量: %d", #storage.dc_list))
         end
         local info = storage.dc_list[1]
         local chunk = info.chunk
@@ -697,7 +723,7 @@ end)
 -- 检测是否为雷达
 local function is_radar(entity)
     if entity.name == "radar" then
-        game.print(string.format("禁止创建[item=radar][gps=%d,%d,%s]", entity.position.x, entity.position.y,
+        game.print(string.format("▣ 禁止创建[item=radar][gps=%d,%d,%s] ▣", entity.position.x, entity.position.y,
             entity.surface.name))
         -- 创建一个爆炸
         entity.surface.create_entity({
@@ -739,7 +765,6 @@ script.on_event(defines.events.on_robot_built_entity, function(event)
     local entity = event.entity
     is_radar(entity)
     if not is_in_force_area(entity) then
-        game.print("不能在此区域创建实体")
         entity.destroy()
     end
 end)
@@ -751,7 +776,7 @@ script.on_event(defines.events.on_built_entity, function(event)
     local entity = event.entity
     is_radar(entity)
     if not is_in_force_area(entity) then
-        game.print("不能在此区域创建实体 ☞ " .. player.name)
+        game.print("▣ 不能在此区域创建实体 ▣" .. player.name)
         entity.destroy()
     end
 end)
@@ -787,40 +812,40 @@ script.on_event(defines.events.on_player_changed_position, function(event)
     if not is_in_force_area(player.character) then
         local force_info = storage.forceInfos[player.force.name]
         if force_info then
-            player.print("你已离开宗门区域，将被传送回宗门出生点")
+            player.print("▣ 你已离开宗门区域，将被传送回宗门出生点 ▣")
             player.teleport(force_info.spawn_position, player.surface)
         end
     end
 end)
 
--- -- 监听蓝图创建事件
--- script.on_event(defines.events.on_player_setup_blueprint, function(event)
---     local player = game.get_player(event.player_index)
---     if not player then return end
+-- 监听蓝图创建事件
+script.on_event(defines.events.on_player_setup_blueprint, function(event)
+    local player = game.get_player(event.player_index)
+    if not player then return end
 
---     -- 获取蓝图实体
---     local blueprint = player.blueprint_to_setup
---     if not blueprint or not blueprint.valid_for_read then
---         blueprint = player.cursor_stack
---     end
---     if not blueprint or not blueprint.valid_for_read then return end
+    -- 获取蓝图实体
+    local blueprint = player.blueprint_to_setup
+    if not blueprint or not blueprint.valid_for_read then
+        blueprint = player.cursor_stack
+    end
+    if not blueprint or not blueprint.valid_for_read then return end
 
---     -- 获取选择的区域内的实体
---     local entities = event.mapping.get()
---     if not entities then return end
+    -- 获取选择的区域内的实体
+    local entities = event.mapping.get()
+    if not entities then return end
 
---     -- 检查是否包含其他势力的建筑
---     for _, entity in pairs(entities) do
---         if entity.valid and entity.force ~= player.force then
---             -- 清空蓝图
---             blueprint.clear_blueprint()
---             -- 提示玩家
---             game.print(string.format("不能复制其他宗门的建筑作为蓝图[gps=%d,%d,%s] ☞ %s", entity.position.x, entity.position.y,
---                 entity.surface.name, player.name))
---             return
---         end
---     end
--- end)
+    -- 检查是否包含其他势力的建筑
+    for _, entity in pairs(entities) do
+        if entity.valid and entity.force ~= player.force then
+            -- 清空蓝图
+            blueprint.clear_blueprint()
+            -- 提示玩家
+            game.print(string.format("▣ 不能复制其他宗门的建筑作为蓝图[gps=%d,%d,%s] ▣ %s", entity.position.x, entity.position.y,
+                entity.surface.name, player.name))
+            return
+        end
+    end
+end)
 
 -- 监听玩家旋转建筑事件
 script.on_event(defines.events.on_player_rotated_entity, function(event)
@@ -835,7 +860,7 @@ script.on_event(defines.events.on_player_rotated_entity, function(event)
                 entity.direction = event.previous_direction
             end
             -- 提示玩家
-            game.print(string.format("不能旋转其他宗门的建筑[gps=%d,%d,%s] ☞ %s", entity.position.x, entity.position.y,
+            game.print(string.format("▣ 不能旋转其他宗门的建筑[gps=%d,%d,%s] ▣ %s", entity.position.x, entity.position.y,
                 entity.surface.name, player.name))
         end
     end
@@ -855,7 +880,7 @@ script.on_event(defines.events.on_gui_opened, function(event)
             -- 关闭GUI
             player.opened = nil
             -- 提示玩家
-            game.print(string.format("不能查看或修改其他宗门的建筑[gps=%d,%d,%s] ☞ %s", entity.position.x, entity.position.y,
+            game.print(string.format("▣ 不能查看或修改其他宗门的建筑[gps=%d,%d,%s] ▣ %s", entity.position.x, entity.position.y,
                 entity.surface.name, player.name))
         end
     end
@@ -871,9 +896,9 @@ script.on_event(defines.events.on_entity_settings_pasted, function(event)
         -- 检查目标实体是否属于其他势力
         if destination.force ~= player.force then
             -- 提示玩家
-            game.print(string.format("通过复制设置修改其他宗门设施[gps=%d,%d,%s] ☞ %s", destination.position.x, destination.position.y,
+            game.print(string.format("▣ 不能通过复制设置修改其他宗门设施[gps=%d,%d,%s] ▣ %s", destination.position.x, destination.position.y,
                 destination.surface.name, player.name))
-            game.print(string.format("%s已被杀死，大家不要学他", player.name))
+            game.print(string.format("▣ %s已被杀死，大家不要学他 ▣", player.name))
             -- 杀死这样操作的玩家
             player.character.die()
         end

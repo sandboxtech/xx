@@ -1278,13 +1278,18 @@ local function on_gui_click(event)
 
         -- 离开宗门
         local force_info = storage.forceInfos[player.force.name]
-        force_info.canJoin = true -- 宗门允许加入
 
+        force_info.canJoin = true -- 宗门允许加入
         -- 同步所有同宗门玩家的复选框状态
         for _, p in pairs(force_info.force.players) do
             if p.gui.left["joined_team_frame"] then
                 p.gui.left["joined_team_frame"]["allow_join_checkbox"].state = true
             end
+        end
+        if force_info.canJoin then
+            game.print(string.format("宗门 %s 开始招收弟子", force_manager.get_force_name(force)))
+        else
+            game.print(string.format("宗门 %s 停止招收弟子", force_manager.get_force_name(force)))
         end
 
 
@@ -1384,6 +1389,7 @@ local function on_gui_click(event)
     end
 end
 
+
 -- 当玩家加入游戏时显示按钮
 script.on_event(defines.events.on_player_joined_game, function(event)
     local player = game.players[event.player_index]
@@ -1398,31 +1404,17 @@ script.on_event(defines.events.on_player_joined_game, function(event)
 
     local player = game.get_player(event.player_index)
 
-    local hour_to_tick = 216000
-    local welcome = {}
+    local hour_to_tick = 15 * 60 * 60 -- 54000
     if player.online_time > 0 then
         local last_delta = math.max(0, math.floor((game.tick - player.last_online) / hour_to_tick))
         local total_time = math.max(0, math.floor(player.online_time / hour_to_tick))
-        welcome = {
-            "welcome-player", player.name,
-            total_time,
-            last_delta
-        }
+        game.print(string.format("欢迎 %s 道友重临星域！\n在线时长 %i 刻\n距离上次登录 %i 刻", player.name, total_time, last_delta))
+
+        -- 当前星域时辰：卯时三刻 在线修士：427/500
+        player.print(string.format("当前星域时辰 %i 刻", math.floor(game.tick % hour_to_tick)))
     else
-        welcome = { "welcome-new-player", player.name }
-    end
-    game.print(welcome)
-
-
-    player.print("采玄铁、炼灵晶，筑自动化洞府生产线，开宗立派广纳门众")
-    player.print("献祭宗门，进行转生，获取永久个人角色加成")
-    if #game.connected_players > 0 then
-        -- 以器证道，以厂入圣
-        
-        player.print("〖洞天福地·宗门玉册〗")
-        player.print("# 输入「神识感应」可查诸天同道方位 #")
-        player.print("# 颂念「观星寻舟」可窥虚空仙舰轨迹 #")
-        player.print("# 铸九转金丹者可献祭宗门，涅槃转生得先天道体加成 #")
+        game.print(string.format("欢迎 %s 道友光临星域", player.name))
+        player.print("▶ 输入「修仙」阅读〖星域修仙录〗")
     end
 
     -- 火箭射速增加
@@ -1485,6 +1477,11 @@ script.on_event(defines.events.on_gui_checked_state_changed, function(event)
 
     if element.name == "allow_join_checkbox" then
         storage.forceInfos[player.force.name].canJoin = element.state
+        if element.state then
+            game.print(string.format("宗门 %s 开始招收弟子", force_manager.get_force_name(player.force)))
+        else
+            game.print(string.format("宗门 %s 停止招收弟子", force_manager.get_force_name(player.force)))
+        end
 
         -- 同步所有同宗门玩家的复选框状态
         for _, p in pairs(player.force.players) do
@@ -1522,7 +1519,7 @@ script.on_event(defines.events.on_space_platform_built_tile, function(event)
     end
 
     if weight_sum > (max_level + 3) * 1000 * 1000 then
-        game.print("仙舟总重量不能超过" .. ((max_level + 3) * 1000) .. "吨")
+        game.print("▣ 仙舟总重量不能超过" .. ((max_level + 3) * 1000) .. "吨")
         for _, info in pairs(event.tiles) do
             surface.set_tiles({ {
                 name = info.old_tile,
@@ -1532,7 +1529,7 @@ script.on_event(defines.events.on_space_platform_built_tile, function(event)
     end
 
     if #platform.force.platforms > max_level + 3 then
-        game.print("仙舟不能超过" .. (max_level + 3) .. "艘")
+        game.print("▣ 仙舟不能超过" .. (max_level + 3) .. "艘")
         local platform = platform.force.platforms[max_level + 4]
         if platform then
             local hub = platform.hub
