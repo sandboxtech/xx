@@ -6,6 +6,6 @@ script.on_event(defines.events.on_research_finished, function(event)
     if not force then return end
 
     game.print(string.format(
-        "恭喜 宗门 %s 掌握 [technology=%s]",
+        "宗门 %s 掌握 [technology=%s]",
         force_manager.get_force_name(force), research.name))
 end)

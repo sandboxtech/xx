@@ -1413,11 +1413,17 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     end
     game.print(welcome)
 
-    if #game.connected_players > 0 then
-        player.print("聊天框输入:在线的人，查看在线的人的位置")
-        player.print("聊天框输入:飞行的船，查看飞行的船的位置")
-    end
 
+    player.print("采玄铁、炼灵晶，筑自动化洞府生产线，开宗立派广纳门众")
+    player.print("献祭宗门，进行转生，获取永久个人角色加成")
+    if #game.connected_players > 0 then
+        -- 以器证道，以厂入圣
+        
+        player.print("〖洞天福地·宗门玉册〗")
+        player.print("# 输入「神识感应」可查诸天同道方位 #")
+        player.print("# 颂念「观星寻舟」可窥虚空仙舰轨迹 #")
+        player.print("# 铸九转金丹者可献祭宗门，涅槃转生得先天道体加成 #")
+    end
 
     -- 火箭射速增加
     if storage.speed_rank == nil then
@@ -1445,6 +1451,20 @@ script.on_event(defines.events.on_player_joined_game, function(event)
         create_team_buttons(player)
     else
         show_joined_player_ui(player)
+    end
+end)
+
+-- 当玩家退出
+script.on_event(defines.events.on_player_left_game, function(event)
+    local player = game.players[event.player_index]
+    player.tag = level.get_name(player, true)
+
+    game.print(string.format("%s%s 开始闭关修炼",
+        player.name, player.tag, name, weight))
+
+    local surface_names = { "nauvis", "fulgora", "vulcanus", "gleba", "aquilo" }
+    for _, surface_name in pairs(surface_names) do
+        -- unchart
     end
 end)
 

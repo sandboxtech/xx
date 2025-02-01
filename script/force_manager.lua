@@ -131,8 +131,8 @@ force_manager.create_force = function(name, spawn_surface)
     force.technologies["artillery"].enabled = false
     force.technologies["artillery-shell-damage-1"].enabled = false
     force.technologies["artillery-shell-range-1"].enabled = false
-    force.technologies["logistic-system"].enabled = false
-    force.technologies["logistic-system"].visible_when_disabled = true
+    -- force.technologies["logistic-system"].enabled = false
+    -- force.technologies["logistic-system"].visible_when_disabled = true
 
     force.technologies["atomic-bomb"].enabled = false
 
@@ -291,7 +291,8 @@ force_manager.destroy_force = function(force, no_clear_inside)
     for i = 1, #force.platforms do
         local hub = force.platforms[i].hub
         if hub then
-            hub.damage(100000000, "enemy")
+            -- hub.damage(100000000, "enemy")
+            hub.destroy()
         end
     end
 
@@ -315,6 +316,13 @@ script.on_event(defines.events.on_surface_created, function(event)
     local mgs = surface.map_gen_settings
     mgs.seed = math.random(1, 4294967295)
 
+    if surface == game.surfaces.nauvis then
+        -- pass
+    end
+
+    local mgs = surface.map_gen_settings
+    mgs.default_enable_all_autoplace_controls = false
+    surface.map_gen_settings = mgs
     local platform = surface.platform
     if platform then
         local size = storage.max_platform_size
@@ -327,21 +335,22 @@ script.on_event(defines.events.on_surface_created, function(event)
 end)
 
 
--- 显示在线的人
-local function show_online_player_postion()
+-- 神识感应
+local function show_online_player_postion(player_print)
     for _, player in pairs(game.players) do
         if player.connected then
-            game.print(string.format("[gps=%d,%d,%s] ☞ %s %s", player.position.x, player.position.y, player.surface.name,
+            player_print.print(string.format("[gps=%d,%d,%s] ☞ %s %s", player.position.x, player.position.y,
+                player.surface.name,
                 player.name, player.tag))
         end
     end
 end
 
--- 现在飞行的船
-local function show_move_platform()
+-- 观星寻舟
+local function show_move_platform(player_print)
     for _, surface in pairs(game.surfaces) do
         if surface.platform ~= nil and surface.platform.space_location == nil then
-            game.print(string.format("[gps=0,0,%s] ☞ %s", surface.name, surface.platform.name))
+            player_print.print(string.format("[gps=0,0,%s] ☞ %s", surface.name, surface.platform.name))
         end
     end
 end
@@ -352,20 +361,19 @@ script.on_event(defines.events.on_console_chat, function(event)
     -- 跳过命令和系统消息
     if event.message:sub(1, 1) == "/" then return end
 
-    if event.message:sub(1, 12) == "在线的人" then
-        show_online_player_postion()
-        return
-    end
-
-    if event.message:sub(1, 12) == "飞行的船" then
-        show_move_platform()
-        return
-    end
-
     -- 获取玩家信息
     local player = game.get_player(event.player_index)
     if not player then return end
 
+    if event.message:sub(1, 12) == "神识感应" then
+        show_online_player_postion(player)
+        return
+    end
+
+    if event.message:sub(1, 12) == "观星寻舟" then
+        show_move_platform(player)
+        return
+    end
 
     -- 开头为"速度"时，设置速度
     if event.message:sub(1, 6) == "速度" then
@@ -390,7 +398,7 @@ script.on_event(defines.events.on_console_chat, function(event)
 
     -- 自定义消息格式
     local force_name = force_manager.get_force_name(player.force)
-    local custom_message = string.format("%s ☞ %s%s: %s", force_name, player.name, player.tag, event.message)
+    local custom_message = string.format("%s 的 %s%s: %s 说", force_name, player.name, player.tag, event.message)
 
     -- 广播自定义消息给所有其他宗门和player
     for _, forceInfo in pairs(storage.forceInfos) do
@@ -460,14 +468,12 @@ end
 
 -- 每帧调用
 script.on_event(defines.events.on_tick, function(event)
-    
-
     if event.tick % 6 * 60 == 0 then
-    -- if event.tick % 60 * 60 * 60 == 0 then
+        -- if event.tick % 60 * 60 * 60 == 0 then
         game.reset_time_played()
 
         -- 删除无人宗门
-        local list = {}
+        -- local list = {}
         for _, info in pairs(storage.forceInfos) do
             local force = info.force
             local min_offline_time = 0
@@ -483,8 +489,58 @@ script.on_event(defines.events.on_tick, function(event)
                 end
             end
 
-            if min_offline_time > 72 then
+            local can_join = false
+            local to_delete = false
+            if min_offline_time > 240 then
+                to_delete = true
+            elseif min_offline_time > 144 then
+                if force.technologies["cryogenic-science-pack"].researched
+                then
+                    can_join = true
+                else
+                    to_delete = true
+                end
+            elseif min_offline_time > 72
+            then
+                if force.technologies["space-science-pack"].researched then
+                    can_join = true
+                else
+                    to_delete = true
+                end
+            elseif min_offline_time > 36
+            then
+                if force.technologies["chemical-science-pac"].researched then
+                    can_join = true
+                else
+                    to_delete = true
+                end
+            elseif min_offline_time > 12
+            then
+                if force.technologies["logistic-science-pack"].researched then
+                    can_join = true
+                else
+                    to_delete = true
+                end
+            elseif min_offline_time > 1
+            then
+                if force.technologies["automation-science-pack"].researched then
+                    can_join = true
+                else
+                    to_delete = true
+                end
+            end
+
+            if to_delete then
                 DF(info.index)
+            elseif can_join then
+                game.print(string.format("宗门 %s 开始招收弟子", force_manager.get_force_name(force)))
+                info.canJoin = true
+                -- 同步所有同宗门玩家的复选框状态
+                for _, p in pairs(force_info.force.players) do
+                    if p.gui.left["joined_team_frame"] then
+                        p.gui.left["joined_team_frame"]["allow_join_checkbox"].state = true
+                    end
+                end
             end
         end
     end
@@ -541,7 +597,7 @@ script.on_event(defines.events.on_tick, function(event)
             -- 如果玩家在仙舟上
             local platform = player.character.surface.platform
 
-            if platform.space_location ~= nil then     -- 停靠 [planet=nauvis]
+            if platform.space_location ~= nil then -- 停靠 [planet=nauvis]
                 if storage.speed_rank == nil then
                     storage.speed_rank = {}
                 end
@@ -554,13 +610,13 @@ script.on_event(defines.events.on_tick, function(event)
                     if storage.speed_rank[player.name] ~= nil and storage.speed_rank[player.name].weight ~= nil then
                         local start_planet = storage.speed_rank[player.name].start_planet
                         local target_planet = platform.space_location.name
-                        local time = (game.tick - storage.speed_rank[player.name].start_time) / 60     -- 秒
-                        local weight = storage.speed_rank[player.name].weight / 1000                   -- 吨
+                        local time = (game.tick - storage.speed_rank[player.name].start_time) / 60 -- 秒
+                        local weight = storage.speed_rank[player.name].weight / 1000               -- 吨
                         if time > 2 and weight > 10 then
-                            local info = get_distance(start_planet, target_planet)                     -- km
+                            local info = get_distance(start_planet, target_planet)                 -- km
                             local distance = info.distance
                             local name = info.name
-                            local socre = distance * distance / time / weight     -- 分
+                            local socre = distance * distance / time / weight -- 分
                             if storage.speed_rank[player.name][name] == nil or storage.speed_rank[player.name][name].socre < socre then
                                 storage.speed_rank[player.name][name] = {
                                     time = time,
@@ -604,14 +660,14 @@ script.on_event(defines.events.on_tick, function(event)
                                 game.print(string.format("%s%s到达破碎星球，下次速度要求降低50km/s", player.name, player.tag));
                             end
 
-                            storage.speed_rank[player.name].curr_time = time     -- 最近一次耗时
+                            storage.speed_rank[player.name].curr_time = time -- 最近一次耗时
                             storage.speed_rank[player.name].start_planet = target_planet
                         end
                     end
                 end
                 storage.speed_rank[player.name].start_time = game.tick
                 storage.speed_rank[player.name].weight = 0
-            else     -- 飞行
+            else -- 飞行
                 -- 环境速度变化
                 if storage.speed_set == nil then
                     storage.speed_set = {}
@@ -683,17 +739,19 @@ script.on_event(defines.events.on_robot_built_entity, function(event)
     local entity = event.entity
     is_radar(entity)
     if not is_in_force_area(entity) then
-        game.print("不能在次区域创建实体")
+        game.print("不能在此区域创建实体")
         entity.destroy()
     end
 end)
 
 -- 创建实体时调用
 script.on_event(defines.events.on_built_entity, function(event)
+    local player = game.get_player(event.player_index)
+    if not player then return end
     local entity = event.entity
     is_radar(entity)
     if not is_in_force_area(entity) then
-        game.print("不能在次区域创建实体")
+        game.print("不能在此区域创建实体 ☞ " .. player.name)
         entity.destroy()
     end
 end)
@@ -735,34 +793,34 @@ script.on_event(defines.events.on_player_changed_position, function(event)
     end
 end)
 
--- 监听蓝图创建事件
-script.on_event(defines.events.on_player_setup_blueprint, function(event)
-    local player = game.get_player(event.player_index)
-    if not player then return end
+-- -- 监听蓝图创建事件
+-- script.on_event(defines.events.on_player_setup_blueprint, function(event)
+--     local player = game.get_player(event.player_index)
+--     if not player then return end
 
-    -- 获取蓝图实体
-    local blueprint = player.blueprint_to_setup
-    if not blueprint or not blueprint.valid_for_read then
-        blueprint = player.cursor_stack
-    end
-    if not blueprint or not blueprint.valid_for_read then return end
+--     -- 获取蓝图实体
+--     local blueprint = player.blueprint_to_setup
+--     if not blueprint or not blueprint.valid_for_read then
+--         blueprint = player.cursor_stack
+--     end
+--     if not blueprint or not blueprint.valid_for_read then return end
 
-    -- 获取选择的区域内的实体
-    local entities = event.mapping.get()
-    if not entities then return end
+--     -- 获取选择的区域内的实体
+--     local entities = event.mapping.get()
+--     if not entities then return end
 
-    -- 检查是否包含其他势力的建筑
-    for _, entity in pairs(entities) do
-        if entity.valid and entity.force ~= player.force then
-            -- 清空蓝图
-            blueprint.clear_blueprint()
-            -- 提示玩家
-            game.print(string.format("不能复制其他宗门的建筑作为蓝图[gps=%d,%d,%s] ☞ %s", entity.position.x, entity.position.y,
-                entity.surface.name, player.name))
-            return
-        end
-    end
-end)
+--     -- 检查是否包含其他势力的建筑
+--     for _, entity in pairs(entities) do
+--         if entity.valid and entity.force ~= player.force then
+--             -- 清空蓝图
+--             blueprint.clear_blueprint()
+--             -- 提示玩家
+--             game.print(string.format("不能复制其他宗门的建筑作为蓝图[gps=%d,%d,%s] ☞ %s", entity.position.x, entity.position.y,
+--                 entity.surface.name, player.name))
+--             return
+--         end
+--     end
+-- end)
 
 -- 监听玩家旋转建筑事件
 script.on_event(defines.events.on_player_rotated_entity, function(event)
