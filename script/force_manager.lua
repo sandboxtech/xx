@@ -621,18 +621,17 @@ end
 
 -- 每帧调用
 script.on_event(defines.events.on_tick, function(event)
-    if event.tick % (12 * 60 * 60) == 0 then
-        game.reset_time_played()
-    end
+    local hour = 60 * 60 * 60
 
-    if event.tick % (60 * 60) == 0 then
-        -- 删除无人宗门
+    if event.tick % hour == 0 then
+        game.reset_time_played()
+
         for _, info in pairs(storage.forceInfos) do
             local force = info.force
             local min_offline_time = 0
             for _, player in pairs(force.players) do
                 if not player.connected then
-                    local offline_time = (game.tick - player.last_online) / 60 / 60 / 60
+                    local offline_time = math.floor((game.tick - player.last_online) / hour)
                     if min_offline_time == 0 or min_offline_time > offline_time then
                         min_offline_time = offline_time
                     end
@@ -642,9 +641,6 @@ script.on_event(defines.events.on_tick, function(event)
                 end
             end
 
-            min_offline_time = math.floor(min_offline_time)
-
-            if min_offline_time == 0 then break end
             local time_max = 1
             if force.technologies["automation-science-pack"].researched
             then
@@ -662,25 +658,25 @@ script.on_event(defines.events.on_tick, function(event)
             local time_left = time_max - min_offline_time
 
             local name = force_manager.get_force_name(force)
+
             if time_left == 24 then
                 if not info.canJoin then
                     game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", name))
                     info.canJoin = true
-                    -- 同步所有同宗门玩家的复选框状态
                     for _, p in pairs(info.force.players) do
                         if p.gui.left["joined_team_frame"] then
                             p.gui.left["joined_team_frame"]["allow_join_checkbox"].state = true
                         end
                     end
                 end
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=##ff3333]十二个时辰[/color]", name))
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]十二个时辰[/color]", name))
             elseif time_left == 12 then
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=##ff3333]六个时辰[/color]", name))
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]六个时辰[/color]", name))
             elseif time_left == 6 then
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=##ff3333]三个时辰[/color]", name))
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]三个时辰[/color]", name))
             elseif time_left == 1 then
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=##ff3333]一个时辰[/color]", name))
-            elseif time_left == 0 then
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]一个时辰[/color]", name))
+            elseif time_left <= 0 then
                 DF(info.index)
             end
         end
