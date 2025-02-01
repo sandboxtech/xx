@@ -361,6 +361,9 @@ local random_messages = {
     "※ 踏采星髓铸玄铁，炼灵脉为产线 ※",
     "※ 踏以器证道，以厂入圣 ※",
     "※ 踏筑自动化洞府生产线，开宗立派广纳门众 ※",
+    "▣ 天道禁制 ▣ 宗门不得交换物资 ※",
+    "▣ 天道禁制 ▣ 宗门不得建设雷达 ※",
+    "▣ 天道禁制 ▣ 宗门不得超过三艘仙舟 ※",
     "※ 踏碎虚空至星域边界者，可献祭宗门进行转生",
     "※ 宗门十日无人，当坠[color=#ff6666]归墟[/color]湮灭于星海",
     "▶ 输入「神识感应」可查诸天同道方位",
@@ -501,7 +504,6 @@ script.on_event(defines.events.on_tick, function(event)
 
     if event.tick % (60 * 60) == 0 then
         -- 删除无人宗门
-        -- local list = {}
         for _, info in pairs(storage.forceInfos) do
             local force = info.force
             local min_offline_time = 0
@@ -516,59 +518,45 @@ script.on_event(defines.events.on_tick, function(event)
                     break
                 end
             end
+            if min_offline_time == 0 then break end
 
-            local can_join = false
-            local to_delete = false
-            if min_offline_time > 240 then
-                to_delete = true
-            elseif min_offline_time > 144 then
-                if force.technologies["cryogenic-science-pack"].researched
-                then
-                    can_join = true
-                else
-                    to_delete = true
-                end
-            elseif min_offline_time > 72
+            local time_max = 1
+            if force.technologies["automation-science-pack"].researched
             then
-                if force.technologies["space-science-pack"].researched then
-                    can_join = true
-                else
-                    to_delete = true
-                end
-            elseif min_offline_time > 36
-            then
-                if force.technologies["chemical-science-pac"].researched then
-                    can_join = true
-                else
-                    to_delete = true
-                end
-            elseif min_offline_time > 12
-            then
-                if force.technologies["logistic-science-pack"].researched then
-                    can_join = true
-                else
-                    to_delete = true
-                end
-            elseif min_offline_time > 1
-            then
-                if force.technologies["automation-science-pack"].researched then
-                    can_join = true
-                else
-                    to_delete = true
-                end
+                time_max = time_max + 6
+            elseif force.technologies["logistic-science-pack"].researched then
+                time_max = time_max + 24
+            elseif force.technologies["chemical-science-pack"].researched then
+                time_max = time_max + 48
+            elseif force.technologies["space-science-pack"].researched then
+                time_max = time_max + 72
+            elseif force.technologies["cryogenic-science-pack"].researched then
+                time_max = time_max + 144
             end
 
-            if to_delete then
-                DF(info.index)
-            elseif can_join and not info.canJoin then
-                game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", force_manager.get_force_name(force)))
-                info.canJoin = true
-                -- 同步所有同宗门玩家的复选框状态
-                for _, p in pairs(info.force.players) do
-                    if p.gui.left["joined_team_frame"] then
-                        p.gui.left["joined_team_frame"]["allow_join_checkbox"].state = true
+            local time_left = time_max - min_offline_time
+
+            local name =force_manager.get_force_name(force)
+            if time_left == 24 then
+                if not info.canJoin then
+                    game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", name))
+                    info.canJoin = true
+                    -- 同步所有同宗门玩家的复选框状态
+                    for _, p in pairs(info.force.players) do
+                        if p.gui.left["joined_team_frame"] then
+                            p.gui.left["joined_team_frame"]["allow_join_checkbox"].state = true
+                        end
                     end
                 end
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=##ff3333]十二个时辰[/color]", name))
+            elseif time_left == 12 then
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=##ff3333]六个时辰[/color]", name))
+            elseif time_left == 6 then
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=##ff3333]三个时辰[/color]", name))
+            elseif time_left == 1 then
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=##ff3333]一个时辰[/color]", name))
+            elseif time_left == 0 then
+                DF(info.index)
             end
         end
     end
