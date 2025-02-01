@@ -513,7 +513,7 @@ script.on_event(defines.events.on_console_chat, function(event)
         return
     end
 
-    if message == "采矿" or message == "采石"  or message == "挖矿"  then
+    if message == "采矿" or message == "采石" or message == "挖矿" then
         give_item(player, ore_names[math.random(#ore_names)], seed_location(ore_locations, 1232))
         return
     end
@@ -641,8 +641,10 @@ script.on_event(defines.events.on_tick, function(event)
                     break
                 end
             end
-            if min_offline_time == 0 then break end
 
+            min_offline_time = math.floor(min_offline_time)
+
+            if min_offline_time == 0 then break end
             local time_max = 1
             if force.technologies["automation-science-pack"].researched
             then
