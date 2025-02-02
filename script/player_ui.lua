@@ -28,7 +28,7 @@ local function show_destroy_team_dialog(player)
     -- 添加警告文本
     frame.add {
         type = "label",
-        caption = "警告：此操作不可撤销！\n所有队员将被传送回出生点\n宗门领地将被重置",
+        caption = "警告: 此操作不可撤销！\n所有队员将被传送回出生点\n宗门领地将被重置",
         style = "bold_red_label"
     }
 
@@ -1314,7 +1314,7 @@ local function on_gui_click(event)
 
         -- player.character.damage(100000000, "enemy")
         player.character.die()
-        game.print(player.name .. "自刎离开了宗门: " .. force_manager.get_force_name(player.force))
+        game.print("道友 [color=#00ffff]" .. player.name .. "[/color] 自刎离开了宗门 [color=#ffff00]" .. force_manager.get_force_name(player.force) .. "[/color]")
 
         player.force = game.forces.player
     elseif element.name == "rename_team" then
@@ -1463,7 +1463,7 @@ script.on_event(defines.events.on_player_left_game, function(event)
     local player = game.players[event.player_index]
     player.tag = level.get_name(player, true)
 
-    game.print(string.format("%s%s 开始闭关修炼",
+    game.print(string.format("[color=#00ffff]%s[/color]%s 开始闭关修炼",
         player.name, player.tag, name, weight))
 
     local surface_names = { "nauvis", "fulgora", "vulcanus", "gleba", "aquilo" }

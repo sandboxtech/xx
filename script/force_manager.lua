@@ -550,13 +550,13 @@ script.on_event(defines.events.on_console_chat, function(event)
                 storage.speed_set = {}
             end
             storage.speed_set[player.name] = level.get_speed(speed) / 60
-            player.print(string.format("%s%s设置所在仙舟速度为%.2fkm/s", player.name, player.tag, speed))
+            player.print(string.format("道友 [color=#00ffff]%s[/color] %s设置所在仙舟速度为%.2fkm/s", player.name, player.tag, speed))
         end
     end
 
     -- 自定义消息格式
     local force_name = force_manager.get_force_name(player.force)
-    local custom_message = string.format("%s %s%s: %s", force_name, player.name, player.tag, event.message)
+    local custom_message = string.format("[color=#ffff00]%s[/color][color=#00ffff]%s[/color]%s: %s", force_name, player.name, player.tag, event.message)
 
     -- 广播自定义消息给所有其他宗门和player
     for _, forceInfo in pairs(storage.forceInfos) do
@@ -586,7 +586,7 @@ DC = function()
             end
         end
     end
-    game.print(string.format("▣ 计划回收地块数量:%d ▣", #storage.dc_list))
+    game.print(string.format("▣ 计划回收地块数量: %d ▣", #storage.dc_list))
 end
 
 -- 清空神游记录
@@ -794,7 +794,7 @@ script.on_event(defines.events.on_tick, function(event)
                                     socre = socre,
                                     distance = distance,
                                 }
-                                game.print(string.format("%s%s突破了神游[space-location=%s]分数记录(%d), 前往神游榜查看", player
+                                game.print(string.format("[color=#00ffff]%s[/color]%s突破了神游[space-location=%s]分数记录(%d), 前往神游榜查看", player
                                     .name, player.tag, name, socre))
                             end
                             if storage.speed_rank[player.name][name].min_time == nil or storage.speed_rank[player.name][name].min_time.time > time then
@@ -804,7 +804,7 @@ script.on_event(defines.events.on_tick, function(event)
                                     socre = socre,
                                     distance = distance,
                                 }
-                                game.print(string.format("%s%s突破了神游[space-location=%s]速度记录(%.2fkm/s), 前往神游榜查看",
+                                game.print(string.format("[color=#00ffff]%s[/color]%s突破了神游[space-location=%s]速度记录(%.2fkm/s), 前往神游榜查看",
                                     player.name, player.tag, name, distance / time))
                             end
                             if storage.speed_rank[player.name][name].min_weight == nil or storage.speed_rank[player.name][name].min_weight.weight > weight then
