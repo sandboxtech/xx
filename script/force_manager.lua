@@ -236,13 +236,13 @@ end
 -- 销毁宗门
 force_manager.destroy_force = function(force, no_clear_inside)
     local name = force_manager.get_force_name(force)
-    game.print("宗门 [color=yellow]" .. name .. "[/color] 湮灭于 [color=#ff6666]归墟[/color]")
+    game.print("宗门 [color=#ffff00]" .. name .. "[/color] 湮灭于 [color=#ff00ff]归墟[/color]")
     -- 宗门玩家改为player宗门
     for _, player in pairs(force.players) do
         -- 关闭已加入玩家界面
         if player.gui.left["joined_team_frame"] then player.gui.left["joined_team_frame"].destroy() end
 
-        game.print("道友 [color=yellow]" .. player.name .. "[/color] 转生，未能提升境界")
+        game.print("道友 [color=#00ffff]" .. player.name .. "[/color] 转生，未能提升境界")
 
         -- 创建玩家界面
         ui.create_team_buttons(player)
@@ -372,7 +372,7 @@ local random_messages = {
     "〓 [technology=cryogenic-science-pack] 宗门 最大离线时间为 [color=#ff3333]五天[/color] 〓",
     "〓 [technology=promethium-science-pack] 宗门 最大离线时间为 [color=#ff3333]七天[/color] 〓",
     "※ 碎虚空至星域边界者，可献祭宗门进行转生",
-    "※ 宗门无人，当坠[color=#ff6666]归墟[/color]，湮灭于星海",
+    "※ 宗门无人，当坠[color=#ff00ff]归墟[/color]，湮灭于星海",
     "▶ 输入「神识感应」可查诸天同道方位",
     "▶ 输入「观星寻舟」可窥虚空仙舰轨迹",
     "▶ 输入「钓鱼」「伐木」「采矿」「采药」「寻宝」",
@@ -465,7 +465,7 @@ local give_item = function(player, name, location, count)
     if not count then count = 1 end
     if not quality then quality = "normal" end
     player.insert { name = name, count = 1 }
-    game.print("道友[color=yellow]" .. player.name
+    game.print("道友 [color=#00ffff]" .. player.name
         .. "[/color]于" .. location
         .. "获得[item=" .. name .. ",quality=" .. random_qualities[math.random(#random_qualities)] .. "]")
 end
@@ -508,7 +508,7 @@ script.on_event(defines.events.on_console_chat, function(event)
         if count > 0 then
             give_item(player, 'raw-fish', seed_location(fish_locations, 1230))
         else
-            game.print("道友[color=yellow]" .. player.name .. "[/color]一无所获")
+            game.print("道友 [color=#00ffff]" .. player.name .. "[/color]一无所获")
         end
         return
     end
@@ -646,7 +646,7 @@ end
 function notifyForce(info, time_str)
     local name = force_manager.get_force_name(info)
     if not info.canJoin then
-        game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", name))
+        game.print(string.format("宗门 [color=#ffff00]%s[/color] 开始招收弟子", name))
         info.canJoin = true
         for _, p in pairs(info.force.players) do
             if p.gui.left["joined_team_frame"] then
@@ -654,7 +654,7 @@ function notifyForce(info, time_str)
             end
         end
     end
-    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]%s[/color]", name, time_str))
+    game.print(string.format("宗门 [color=#ffff00]%s[/color] 仅剩 [color=#ff3333]%s[/color]", name, time_str))
 end
 
 -- 每帧调用

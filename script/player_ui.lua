@@ -1297,7 +1297,7 @@ local function on_gui_click(event)
                 p.gui.left["joined_team_frame"]["allow_join_checkbox"].state = true
             end
         end
-        game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", force_manager.get_force_name(force_info)))
+        game.print(string.format("宗门 [color=#ffff00]%s[/color] 开始招收弟子", force_manager.get_force_name(force_info)))
 
         
 
@@ -1336,7 +1336,7 @@ local function on_gui_click(event)
             end
             -- 更新宗门名称
             storage.forceInfos[player.force.name].name = new_name
-            game.print(string.format("宗门 [color=yellow]%s[/color] 改名为 [color=yellow]%s[/color]", old_name, new_name))
+            game.print(string.format("宗门 [color=#ffff00]%s[/color] 改名为 [color=yellow]%s[/color]", old_name, new_name))
             element.parent.parent.destroy()
             show_joined_player_ui(player)
         else
@@ -1490,9 +1490,9 @@ script.on_event(defines.events.on_gui_checked_state_changed, function(event)
     if element.name == "allow_join_checkbox" then
         storage.forceInfos[player.force.name].canJoin = element.state
         if element.state then
-            game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", force_manager.get_force_name(player.force)))
+            game.print(string.format("宗门 [color=#ffff00]%s[/color] 开始招收弟子", force_manager.get_force_name(player.force)))
         else
-            game.print(string.format("宗门 [color=yellow]%s[/color] 停止招收弟子", force_manager.get_force_name(player.force)))
+            game.print(string.format("宗门 [color=#ffff00]%s[/color] 停止招收弟子", force_manager.get_force_name(player.force)))
         end
 
         -- 同步所有同宗门玩家的复选框状态
