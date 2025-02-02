@@ -643,6 +643,20 @@ local function max_min_left_of(force)
     return max_offline_m * 60
 end
 
+function notifyForce(info, time_str)
+    local name = force_manager.get_force_name(info)
+    if not info.canJoin then
+        game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", name))
+        info.canJoin = true
+        for _, p in pairs(info.force.players) do
+            if p.gui.left["joined_team_frame"] then
+                p.gui.left["joined_team_frame"]["allow_join_checkbox"].state = true
+            end
+        end
+    end
+    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]%s[/color]", name, time_str))
+end
+
 -- 每帧调用
 script.on_event(defines.events.on_tick, function(event)
     local minute = 60 * 60
@@ -676,33 +690,22 @@ script.on_event(defines.events.on_tick, function(event)
 
             local m_left = max_min_left_of(force) - min_offline_m
 
-            local name = force_manager.get_force_name(force)
-
             if m_left == 24 * 60 then
-                if not info.canJoin then
-                    game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", name))
-                    info.canJoin = true
-                    for _, p in pairs(info.force.players) do
-                        if p.gui.left["joined_team_frame"] then
-                            p.gui.left["joined_team_frame"]["allow_join_checkbox"].state = true
-                        end
-                    end
-                end
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]十二时辰[/color]", name))
+                notifyForce(info, "十二时辰")
             elseif m_left == 12 * 60 then
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]六个时辰[/color]", name))
+                notifyForce(info, "六个时辰")
             elseif m_left == 6 * 60 then
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]三个时辰[/color]", name))
+                notifyForce(info, "三个时辰")
             elseif m_left == 2 * 60 then
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]一个时辰[/color]", name))
+                notifyForce(info, "一个时辰")
             elseif m_left == 1 * 60 then
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]半个时辰[/color]", name))
+                notifyForce(info, "半个时辰")
             elseif m_left == 30 then
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]半个时辰[/color]", name))
+                notifyForce(info, "一炷香")
             elseif m_left == 15 then
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]一炷香[/color]", name))
+                notifyForce(info, "一刻钟")
             elseif m_left == 1 then
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]一分钟[/color]", name))
+                notifyForce(info, "一分钟")
             end
 
             if m_left <= 0 then

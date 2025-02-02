@@ -1297,9 +1297,9 @@ local function on_gui_click(event)
                 p.gui.left["joined_team_frame"]["allow_join_checkbox"].state = true
             end
         end
-        game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", force_manager.get_force_name(force)))
+        game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", force_manager.get_force_name(force_info)))
 
-
+        
 
         element.parent.parent.destroy()
         player.gui.left["joined_team_frame"].destroy()
