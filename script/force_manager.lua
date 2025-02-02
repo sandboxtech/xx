@@ -76,20 +76,20 @@ PrintForce = function()
     local list = {}
     for _, info in pairs(storage.forceInfos) do
         local force = info.force
-        local min_offline_time = 0
+        local min_offline_m = 0
         for _, player in pairs(force.players) do
             if not player.connected then
                 local offline_time = (game.tick - player.last_online) / 60 / 60 / 60
-                if min_offline_time == 0 or min_offline_time > offline_time then
-                    min_offline_time = offline_time
+                if min_offline_m == 0 or min_offline_m > offline_time then
+                    min_offline_m = offline_time
                 end
             else
-                min_offline_time = 0
+                min_offline_m = 0
                 break
             end
         end
-        if min_offline_time > 0 then
-            table.insert(list, { info = info, offline_time = min_offline_time })
+        if min_offline_m > 0 then
+            table.insert(list, { info = info, offline_time = min_offline_m })
         end
     end
     table.sort(list, function(a, b) return a.offline_time < b.offline_time end)
@@ -236,7 +236,7 @@ end
 -- 销毁宗门
 force_manager.destroy_force = function(force, no_clear_inside)
     local name = force_manager.get_force_name(force)
-    game.print("宗门 [color=yellow]" .. name .. "[/color] 湮灭于[color=#ff6666]归墟[/color]")
+    game.print("宗门 [color=yellow]" .. name .. "[/color] 湮灭于 [color=#ff6666]归墟[/color]")
     -- 宗门玩家改为player宗门
     for _, player in pairs(force.players) do
         -- 关闭已加入玩家界面
@@ -359,15 +359,20 @@ local function show_move_platform(player_print)
 end
 
 local random_messages = {
-    -- "※（天机符）、〓（天道碑）、▣（禁制印）",
     "※ 采星髓铸玄铁，炼灵脉为产线 ※",
     "※ 以器证道，以厂入圣 ※",
     "※ 筑自动化洞府生产线，开宗立派广纳门众 ※",
     "▣ 天道禁制 ▣ 宗门不得交换物资 ※",
-    "▣ 天道禁制 ▣ 宗门不得建设雷达 ※",
+    "▣ 天道禁制 ▣ 宗门不得建设雷达 [entity=radar] ※",
     "▣ 天道禁制 ▣ 宗门不得超过三艘仙舟 ※",
+    "〓 [technology=automation-science-pack] 宗门 最大离线时间为 [color=#ff3333]三个时辰[/color] 〓",
+    "〓 [technology=logistic-science-pack] 宗门 最大离线时间为 [color=#ff3333]一天[/color] 〓",
+    "〓 [technology=chemical-science-pack] 宗门 最大离线时间为 [color=#ff3333]两天[/color] 〓",
+    "〓 [technology=space-science-pack] 宗门 最大离线时间为 [color=#ff3333]三天[/color] 〓",
+    "〓 [technology=cryogenic-science-pack] 宗门 最大离线时间为 [color=#ff3333]五天[/color] 〓",
+    "〓 [technology=promethium-science-pack] 宗门 最大离线时间为 [color=#ff3333]七天[/color] 〓",
     "※ 碎虚空至星域边界者，可献祭宗门进行转生",
-    "※ 宗门十日无人，当坠[color=#ff6666]归墟[/color]湮灭于星海",
+    "※ 宗门无人，当坠[color=#ff6666]归墟[/color]，湮灭于星海",
     "▶ 输入「神识感应」可查诸天同道方位",
     "▶ 输入「观星寻舟」可窥虚空仙舰轨迹",
     "▶ 输入「钓鱼」「伐木」「采矿」「采药」「寻宝」",
@@ -619,65 +624,89 @@ local function get_distance(start_planet, target_planet)
     end
 end
 
+local function max_min_left_of(force)
+    local max_offline_m = 2
+    if force.technologies["automation-science-pack"].researched
+    then
+        max_offline_m = 6
+    elseif force.technologies["logistic-science-pack"].researched then
+        max_offline_m = 24
+    elseif force.technologies["chemical-science-pack"].researched then
+        max_offline_m = 24 * 2
+    elseif force.technologies["space-science-pack"].researched then
+        max_offline_m = 24 * 3
+    elseif force.technologies["cryogenic-science-pack"].researched then
+        max_offline_m = 24 * 5
+    elseif force.technologies["promethium-science-pack"].researched then
+        max_offline_m = 24 * 7
+    end
+    return max_offline_m * 60
+end
+
 -- 每帧调用
 script.on_event(defines.events.on_tick, function(event)
-    local hour = 60 * 60 * 60
+    local minute = 60 * 60
+    local hour = minute * 60
 
     if event.tick % hour == 0 then
         game.reset_time_played()
 
-        for _, info in pairs(storage.forceInfos) do
-            local force = info.force
-            local min_offline_time = 0
-            for _, player in pairs(force.players) do
-                if not player.connected then
-                    local offline_time = math.floor((game.tick - player.last_online) / hour)
-                    if min_offline_time == 0 or min_offline_time > offline_time then
-                        min_offline_time = offline_time
+        if event.tick % minute == 0 then
+            for _, info in pairs(storage.forceInfos) do
+                local force = info.force
+
+                local min_offline_m = 0
+
+                for _, player in pairs(force.players) do
+                    if not player.connected then
+                        local offline_m = math.floor((game.tick - player.last_online) / minute)
+
+                        if min_offline_m == 0 or min_offline_m > offline_m then
+                            min_offline_m = offline_m
+                        end
+                    else
+                        min_offline_m = 0
+                        break
                     end
-                else
-                    min_offline_time = 0
-                    break
                 end
-            end
 
-            local time_max = 1
-            if force.technologies["automation-science-pack"].researched
-            then
-                time_max = time_max + 6
-            elseif force.technologies["logistic-science-pack"].researched then
-                time_max = time_max + 24
-            elseif force.technologies["chemical-science-pack"].researched then
-                time_max = time_max + 48
-            elseif force.technologies["space-science-pack"].researched then
-                time_max = time_max + 72
-            elseif force.technologies["cryogenic-science-pack"].researched then
-                time_max = time_max + 144
-            end
+                if min_offline_m == 0 then goto continue end
 
-            local time_left = time_max - min_offline_time
+                local m_left = max_min_left_of(force) - min_offline_m
 
-            local name = force_manager.get_force_name(force)
+                local name = force_manager.get_force_name(force)
 
-            if time_left == 24 then
-                if not info.canJoin then
-                    game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", name))
-                    info.canJoin = true
-                    for _, p in pairs(info.force.players) do
-                        if p.gui.left["joined_team_frame"] then
-                            p.gui.left["joined_team_frame"]["allow_join_checkbox"].state = true
+                if m_left == 24 * 60 then
+                    if not info.canJoin then
+                        game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", name))
+                        info.canJoin = true
+                        for _, p in pairs(info.force.players) do
+                            if p.gui.left["joined_team_frame"] then
+                                p.gui.left["joined_team_frame"]["allow_join_checkbox"].state = true
+                            end
                         end
                     end
+                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]十二时辰[/color]", name))
+                elseif m_left == 12 * 60 then
+                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]六个时辰[/color]", name))
+                elseif m_left == 6 * 60 then
+                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]三个时辰[/color]", name))
+                elseif m_left == 2 * 60 then
+                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]一个时辰[/color]", name))
+                elseif m_left == 1 * 60 then
+                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]半个时辰[/color]", name))
+                elseif m_left == 30 then
+                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]半个时辰[/color]", name))
+                elseif m_left == 15 then
+                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]一炷香[/color]", name))
+                elseif m_left == 1 then
+                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]一分钟[/color]", name))
                 end
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]十二个时辰[/color]", name))
-            elseif time_left == 12 then
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]六个时辰[/color]", name))
-            elseif time_left == 6 then
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]三个时辰[/color]", name))
-            elseif time_left == 1 then
-                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]一个时辰[/color]", name))
-            elseif time_left <= 0 then
-                DF(info.index)
+
+                if m_left <= 0 then
+                    DF(info.index)
+                end
+                ::continue::
             end
         end
     end
