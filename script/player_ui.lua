@@ -1423,7 +1423,7 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     if player.online_time > 0 then
         local last_delta = math.max(0, math.floor((game.tick - player.last_online) / ke_to_tick))
         local total_time = math.max(0, math.floor(player.online_time / ke_to_tick))
-        game.print(string.format("欢迎 %s 道友重临星域！\n\n修仙时长 %i 刻\n已经闭关 %i 刻", player.name, get_time_str(game.tick), total_time, last_delta))
+        game.print(string.format("欢迎 %s 道友重临星域！\n%s\n修仙时长 %i 刻\n已经闭关 %i 刻", player.name, get_time_str(game.tick), total_time, last_delta))
     else
         game.print(string.format("欢迎 %s 道友光临星域", player.name))
         player.print("▶ 输入「修仙」阅读〖星域修仙录〗")

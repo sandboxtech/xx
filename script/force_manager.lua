@@ -650,64 +650,65 @@ script.on_event(defines.events.on_tick, function(event)
 
     if event.tick % hour == 0 then
         game.reset_time_played()
+    end
 
-        if event.tick % minute == 0 then
-            for _, info in pairs(storage.forceInfos) do
-                local force = info.force
+    if event.tick % minute == 0 then
+        for _, info in pairs(storage.forceInfos) do
+            local force = info.force
 
-                local min_offline_m = 0
+            local min_offline_m = 0
 
-                for _, player in pairs(force.players) do
-                    if not player.connected then
-                        local offline_m = math.floor((game.tick - player.last_online) / minute)
+            for _, player in pairs(force.players) do
+                if not player.connected then
+                    local offline_m = math.floor((game.tick - player.last_online) / minute)
 
-                        if min_offline_m == 0 or min_offline_m > offline_m then
-                            min_offline_m = offline_m
-                        end
-                    else
-                        min_offline_m = 0
-                        break
+                    if min_offline_m == 0 or min_offline_m > offline_m then
+                        min_offline_m = offline_m
                     end
+                else
+                    min_offline_m = 0
+                    break
                 end
-
-                if min_offline_m == 0 then goto continue end
-
-                local m_left = max_min_left_of(force) - min_offline_m
-
-                local name = force_manager.get_force_name(force)
-
-                if m_left == 24 * 60 then
-                    if not info.canJoin then
-                        game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", name))
-                        info.canJoin = true
-                        for _, p in pairs(info.force.players) do
-                            if p.gui.left["joined_team_frame"] then
-                                p.gui.left["joined_team_frame"]["allow_join_checkbox"].state = true
-                            end
-                        end
-                    end
-                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]十二时辰[/color]", name))
-                elseif m_left == 12 * 60 then
-                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]六个时辰[/color]", name))
-                elseif m_left == 6 * 60 then
-                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]三个时辰[/color]", name))
-                elseif m_left == 2 * 60 then
-                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]一个时辰[/color]", name))
-                elseif m_left == 1 * 60 then
-                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]半个时辰[/color]", name))
-                elseif m_left == 30 then
-                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]半个时辰[/color]", name))
-                elseif m_left == 15 then
-                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]一炷香[/color]", name))
-                elseif m_left == 1 then
-                    game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]一分钟[/color]", name))
-                end
-
-                if m_left <= 0 then
-                    DF(info.index)
-                end
-                ::continue::
             end
+
+            if min_offline_m == 0 then goto continue end
+
+
+            local m_left = max_min_left_of(force) - min_offline_m
+
+            local name = force_manager.get_force_name(force)
+
+            if m_left == 24 * 60 then
+                if not info.canJoin then
+                    game.print(string.format("宗门 [color=yellow]%s[/color] 开始招收弟子", name))
+                    info.canJoin = true
+                    for _, p in pairs(info.force.players) do
+                        if p.gui.left["joined_team_frame"] then
+                            p.gui.left["joined_team_frame"]["allow_join_checkbox"].state = true
+                        end
+                    end
+                end
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]十二时辰[/color]", name))
+            elseif m_left == 12 * 60 then
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]六个时辰[/color]", name))
+            elseif m_left == 6 * 60 then
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]三个时辰[/color]", name))
+            elseif m_left == 2 * 60 then
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]一个时辰[/color]", name))
+            elseif m_left == 1 * 60 then
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]半个时辰[/color]", name))
+            elseif m_left == 30 then
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]半个时辰[/color]", name))
+            elseif m_left == 15 then
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]一炷香[/color]", name))
+            elseif m_left == 1 then
+                game.print(string.format("宗门 [color=yellow]%s[/color] 仅剩 [color=#ff3333]一分钟[/color]", name))
+            end
+
+            if m_left <= 0 then
+                DF(info.index)
+            end
+            ::continue::
         end
     end
 
