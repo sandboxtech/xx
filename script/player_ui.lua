@@ -1299,7 +1299,7 @@ local function on_gui_click(event)
         end
         game.print(string.format("宗门 [color=#ffff00]%s[/color] 开始招收弟子", force_manager.get_force_name(force_info)))
 
-        
+
 
         element.parent.parent.destroy()
         player.gui.left["joined_team_frame"].destroy()
@@ -1314,7 +1314,8 @@ local function on_gui_click(event)
 
         -- player.character.damage(100000000, "enemy")
         player.character.die()
-        game.print("道友 [color=#00ffff]" .. player.name .. "[/color] 自刎离开了宗门 [color=#ffff00]" .. force_manager.get_force_name(player.force) .. "[/color]")
+        game.print("道友 [color=#00ffff]" ..
+        player.name .. "[/color] 自刎离开了宗门 [color=#ffff00]" .. force_manager.get_force_name(player.force) .. "[/color]")
 
         player.force = game.forces.player
     elseif element.name == "rename_team" then
@@ -1423,7 +1424,8 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     if player.online_time > 0 then
         local last_delta = math.max(0, math.floor((game.tick - player.last_online) / ke_to_tick))
         local total_time = math.max(0, math.floor(player.online_time / ke_to_tick))
-        game.print(string.format("欢迎 %s 道友重临星域！\n%s\n修仙时长 %i 刻\n已经闭关 %i 刻", player.name, get_time_str(game.tick), total_time, last_delta))
+        game.print(string.format("欢迎 %s 道友重临星域！\n%s\n修仙时长 %i 刻\n已经闭关 %i 刻", player.name, get_time_str(game.tick),
+            total_time, last_delta))
     else
         game.print(string.format("欢迎 %s 道友光临星域", player.name))
         player.print("▶ 输入「修仙」阅读〖星域修仙录〗")
@@ -1463,8 +1465,8 @@ script.on_event(defines.events.on_player_left_game, function(event)
     local player = game.players[event.player_index]
     player.tag = level.get_name(player, true)
 
-    game.print(string.format("[color=#00ffff]%s[/color]%s 开始闭关修炼",
-        player.name, player.tag, name, weight))
+    game.print(string.format("[color=#00ffff]%s[/color] [color=#00ffff]%s[/color]%s 开始闭关修炼",
+        force_manager.get_force_name(player.force), player.name, player.tag, name, weight))
 
     local surface_names = { "nauvis", "fulgora", "vulcanus", "gleba", "aquilo" }
     for _, surface_name in pairs(surface_names) do
@@ -1531,7 +1533,7 @@ script.on_event(defines.events.on_space_platform_built_tile, function(event)
     end
 
     if weight_sum > (max_level + 3) * 1000 * 1000 then
-        game.print("▣ 仙舟总重量不能超过" .. ((max_level + 3) * 1000) .. "吨")
+        game.print("▣ 仙舟总重量不能超过" .. ((max_level + 3) * 1000) .. "万钧")
         for _, info in pairs(event.tiles) do
             surface.set_tiles({ {
                 name = info.old_tile,

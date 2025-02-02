@@ -365,12 +365,12 @@ local random_messages = {
     "▣ 天道禁制 ▣ 宗门不得交换物资 ※",
     "▣ 天道禁制 ▣ 宗门不得建设雷达 [entity=radar] ※",
     "▣ 天道禁制 ▣ 宗门不得超过三艘仙舟 ※",
-    "〓 [technology=automation-science-pack] 宗门 最大离线时间为 [color=#ff3333]三个时辰[/color] 〓",
-    "〓 [technology=logistic-science-pack] 宗门 最大离线时间为 [color=#ff3333]一天[/color] 〓",
-    "〓 [technology=chemical-science-pack] 宗门 最大离线时间为 [color=#ff3333]两天[/color] 〓",
-    "〓 [technology=space-science-pack] 宗门 最大离线时间为 [color=#ff3333]三天[/color] 〓",
-    "〓 [technology=cryogenic-science-pack] 宗门 最大离线时间为 [color=#ff3333]五天[/color] 〓",
-    "〓 [technology=promethium-science-pack] 宗门 最大离线时间为 [color=#ff3333]七天[/color] 〓",
+    "〓 [technology=automation-science-pack] 宗门 最长闭关时间为 [color=#ff3333]三个时辰[/color] 〓",
+    "〓 [technology=logistic-science-pack] 宗门 最长闭关时间为 [color=#ff3333]一天[/color] 〓",
+    "〓 [technology=chemical-science-pack] 宗门 最长闭关时间为 [color=#ff3333]两天[/color] 〓",
+    "〓 [technology=space-science-pack] 宗门 最长闭关时间为 [color=#ff3333]三天[/color] 〓",
+    "〓 [technology=cryogenic-science-pack] 宗门 最长闭关时间为 [color=#ff3333]五天[/color] 〓",
+    "〓 [technology=promethium-science-pack] 宗门 最长闭关时间为 [color=#ff3333]七天[/color] 〓",
     "※ 碎虚空至星域边界者，可献祭宗门进行转生",
     "※ 宗门无人，当坠[color=#ff00ff]归墟[/color]，湮灭于星海",
     "▶ 输入「神识感应」可查诸天同道方位",
@@ -556,7 +556,7 @@ script.on_event(defines.events.on_console_chat, function(event)
 
     -- 自定义消息格式
     local force_name = force_manager.get_force_name(player.force)
-    local custom_message = string.format("[color=#ffff00]%s[/color][color=#00ffff]%s[/color]%s: %s", force_name, player.name, player.tag, event.message)
+    local custom_message = string.format("[color=#ffff00]%s[/color] [color=#00ffff]%s[/color]%s: %s", force_name, player.name, player.tag, event.message)
 
     -- 广播自定义消息给所有其他宗门和player
     for _, forceInfo in pairs(storage.forceInfos) do

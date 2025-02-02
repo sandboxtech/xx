@@ -261,7 +261,7 @@ function level.up(player)
     player.tag = level.get_name(player, true)
 
     storage.speed_rank[player.name].start_planet = nil -- 清除起点
-    game.print(string.format("恭喜 %s 突破至 %s[gps=%d,%d,%s]", player.name, level.get_name(player, true), player.position.x,
+    game.print(string.format("〓 星域传音 〓  恭喜 [color=#00ffff]%s[/color] 突破至 %s[gps=%d,%d,%s]", player.name, level.get_name(player, true), player.position.x,
         player.position.y, surface_name))
 end
 
