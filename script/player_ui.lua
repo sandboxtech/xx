@@ -1459,7 +1459,7 @@ script.on_event(defines.events.on_player_left_game, function(event)
     local player = game.players[event.player_index]
     player.tag = level.get_name(player, true)
 
-    game.print(string.format("[color=#00ffff]%s[/color] [color=#00ffff]%s[/color]%s 开始闭关修炼",
+    game.print(string.format("[color=#ffff00]%s[/color] [color=#00ffff]%s[/color]%s 开始闭关修炼",
         force_manager.get_force_name(player.force), player.name, player.tag, name, weight))
 
     local surface_names = { "nauvis", "fulgora", "vulcanus", "gleba", "aquilo" }

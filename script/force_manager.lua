@@ -481,6 +481,7 @@ script.on_event(defines.events.on_console_chat, function(event)
     if event.message:sub(1, 1) == "/" then return end
 
     -- 获取玩家信息
+    if not event.player_index then return end
     local player = game.get_player(event.player_index)
     if not player then return end
 
