@@ -1315,7 +1315,7 @@ local function on_gui_click(event)
         -- player.character.damage(100000000, "enemy")
         player.character.die()
         game.print("道友 [color=#00ffff]" ..
-        player.name .. "[/color] 自刎离开了宗门 [color=#ffff00]" .. force_manager.get_force_name(player.force) .. "[/color]")
+            player.name .. "[/color] 自刎离开了宗门 [color=#ffff00]" .. force_manager.get_force_name(player.force) .. "[/color]")
 
         player.force = game.forces.player
     elseif element.name == "rename_team" then
@@ -1328,7 +1328,7 @@ local function on_gui_click(event)
         if new_name and new_name ~= "" then
             local old_name = storage.forceInfos[player.force.name].name
             -- 检查新名称是否已存在
-            if #new_name > 40 then
+            if #new_name > 64 then
                 player.print("宗门名号过长，恐难载于三生石", { r = 1 })
                 return
             elseif force_manager.is_force_name_exist(new_name) then
@@ -1337,7 +1337,7 @@ local function on_gui_click(event)
             end
             -- 更新宗门名称
             storage.forceInfos[player.force.name].name = new_name
-            game.print(string.format("宗门 [color=#ffff00]%s[/color] 改名为 [color=yellow]%s[/color]", old_name, new_name))
+            game.print(string.format("宗门 [color=#ffff00]%s[/color] 改名为 [color=#ffff00]%s[/color]", old_name, new_name))
             element.parent.parent.destroy()
             show_joined_player_ui(player)
         else
@@ -1398,13 +1398,7 @@ local function on_gui_click(event)
     end
 end
 
-local time_table_shichen = { "子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥" }
-local time_table_shike = { "一", "二", "三", "四", "五", "六", "七", "八", }
-local get_time_str = function(tick)
-    local shichen = math.floor(tick / (120 * 60 * 60)) % 12
-    local shike = math.floor(tick / (15 * 60 * 60)) % 8
-    return string.format("%s时%s刻", time_table_shichen[1 + shichen], time_table_shike[1 + shike])
-end
+
 
 -- 当玩家加入游戏时显示按钮
 script.on_event(defines.events.on_player_joined_game, function(event)
@@ -1420,14 +1414,14 @@ script.on_event(defines.events.on_player_joined_game, function(event)
 
     local player = game.get_player(event.player_index)
 
-    local ke_to_tick = 15 * 60 * 60 -- 54000
     if player.online_time > 0 then
+        local ke_to_tick = 120 * 60 * 60 -- 54000
         local last_delta = math.max(0, math.floor((game.tick - player.last_online) / ke_to_tick))
         local total_time = math.max(0, math.floor(player.online_time / ke_to_tick))
-        game.print(string.format("欢迎 %s 道友重临星域！\n%s\n修仙时长 %i 刻\n已经闭关 %i 刻", player.name, get_time_str(game.tick),
-            total_time, last_delta))
+        game.print(string.format("欢迎道友 [color=#00ffff]%s[/color] 重临星域！\n修仙时长 %i 时辰\n已经闭关 %i 时辰",
+            player.name, total_time, last_delta))
     else
-        game.print(string.format("欢迎 %s 道友光临星域", player.name))
+        game.print(string.format("欢迎道友 [color=#00ffff]%s[/color] 光临星域", player.name))
         player.print("▶ 输入「修仙」阅读〖星域修仙录〗")
     end
 

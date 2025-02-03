@@ -171,7 +171,7 @@ function level.set_tech_level(player)
     end
 
     if nauvis_count > 0 then
-        local count = nauvis_count * 2
+        local count = nauvis_count
         force.technologies["mining-productivity-3"].level = count + 3
         force.technologies["steel-plate-productivity"].level = count + 1
         game.print(string.format("%s在[planet=nauvis]重生%d次", player.name, nauvis_count))
@@ -180,7 +180,7 @@ function level.set_tech_level(player)
     end
 
     if fulgora_count > 0 then
-        local count = fulgora_count * 2
+        local count = fulgora_count
         force.technologies["processing-unit-productivity"].level = count + 1
         force.technologies["scrap-recycling-productivity"].level = count + 1
         game.print(string.format("%s在[planet=fulgora]重生%d次", player.name, fulgora_count))
@@ -189,14 +189,14 @@ function level.set_tech_level(player)
     end
 
     if vulcanus_count > 0 then
-        local count = vulcanus_count * 2
+        local count = vulcanus_count
         force.technologies["low-density-structure-productivity"].level = count + 1
         game.print(string.format("%s在[planet=vulcanus]重生%d次", player.name, vulcanus_count))
         game.print(string.format("[technology=low-density-structure-productivity]自动解锁%d次\n", count))
     end
 
     if gleba_count > 0 then
-        local count = gleba_count * 2
+        local count = gleba_count
         force.technologies["rocket-fuel-productivity"].level = count + 1
         force.technologies["plastic-bar-productivity"].level = count + 1
         force.technologies["asteroid-productivity"].level = count + 1

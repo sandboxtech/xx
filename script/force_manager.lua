@@ -474,6 +474,9 @@ local seed_location = function(locations, seed)
     return locations[math.floor((game.tick / seed)) % #locations + 1]
 end
 
+local time_table_shichen = { "子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥" }
+local time_table_shike = { "一", "二", "三", "四", "五", "六", "七", "八", }
+
 -- 聊天时触发
 script.on_event(defines.events.on_console_chat, function(event)
     -- 跳过命令和系统消息
@@ -533,6 +536,13 @@ script.on_event(defines.events.on_console_chat, function(event)
         return
     end
 
+    if message == "观星" then
+        local shichen = math.floor(game.tick / (120 * 60 * 60)) % 12
+        local shike = math.floor(game.tick / (15 * 60 * 60)) % 8
+        game.print(string.format("%s时%s刻", time_table_shichen[1 + shichen], time_table_shike[1 + shike]))
+        return
+    end
+
     -- 开头为"速度"时，设置速度
     if event.message:sub(1, 6) == "速度" then
         local speed = tonumber(event.message:sub(7))
@@ -556,7 +566,8 @@ script.on_event(defines.events.on_console_chat, function(event)
 
     -- 自定义消息格式
     local force_name = force_manager.get_force_name(player.force)
-    local custom_message = string.format("[color=#ffff00]%s[/color] [color=#00ffff]%s[/color]%s: %s", force_name, player.name, player.tag, event.message)
+    local custom_message = string.format("[color=#ffff00]%s[/color] [color=#00ffff]%s[/color]%s: %s", force_name,
+        player.name, player.tag, event.message)
 
     -- 广播自定义消息给所有其他宗门和player
     for _, forceInfo in pairs(storage.forceInfos) do
@@ -663,6 +674,7 @@ script.on_event(defines.events.on_tick, function(event)
     local hour = minute * 60
 
     if event.tick % hour == 0 then
+        DeleteOfflinePlayer()
         game.reset_time_played()
     end
 
@@ -794,7 +806,8 @@ script.on_event(defines.events.on_tick, function(event)
                                     socre = socre,
                                     distance = distance,
                                 }
-                                game.print(string.format("[color=#00ffff]%s[/color]%s突破了神游[space-location=%s]分数记录(%d), 前往神游榜查看", player
+                                game.print(string.format(
+                                    "[color=#00ffff]%s[/color]%s突破了神游[space-location=%s]分数记录(%d), 前往神游榜查看", player
                                     .name, player.tag, name, socre))
                             end
                             if storage.speed_rank[player.name][name].min_time == nil or storage.speed_rank[player.name][name].min_time.time > time then
@@ -804,7 +817,8 @@ script.on_event(defines.events.on_tick, function(event)
                                     socre = socre,
                                     distance = distance,
                                 }
-                                game.print(string.format("[color=#00ffff]%s[/color]%s突破了神游[space-location=%s]速度记录(%.2fkm/s), 前往神游榜查看",
+                                game.print(string.format(
+                                    "[color=#00ffff]%s[/color]%s突破了神游[space-location=%s]速度记录(%.2fkm/s), 前往神游榜查看",
                                     player.name, player.tag, name, distance / time))
                             end
                             if storage.speed_rank[player.name][name].min_weight == nil or storage.speed_rank[player.name][name].min_weight.weight > weight then
@@ -962,6 +976,7 @@ script.on_event(defines.events.on_player_changed_position, function(event)
     end
 end)
 
+-- todo : 蓝图覆盖修改他人
 -- 监听蓝图创建事件
 script.on_event(defines.events.on_player_setup_blueprint, function(event)
     local player = game.get_player(event.player_index)
