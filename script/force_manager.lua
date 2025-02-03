@@ -328,8 +328,6 @@ script.on_event(defines.events.on_surface_created, function(event)
     surface.map_gen_settings = mgs
     local platform = surface.platform
     if platform then
-        local size = storage.max_platform_size
-        size = math.max(size, 64)
         mgs.width = 256
         mgs.height = 256
     end
