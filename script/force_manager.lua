@@ -340,7 +340,8 @@ end)
 local function show_online_player_postion(player_print)
     for _, player in pairs(game.players) do
         if player.connected then
-            player_print.print(string.format("[gps=%d,%d,%s] ☞ %s %s", player.position.x, player.position.y,
+            player_print.print(string.format("[gps=%d,%d,%s] [color=#00ffff]%s[/color]%s", player.position.x,
+                player.position.y,
                 player.surface.name,
                 player.name, player.tag))
         end
@@ -351,7 +352,7 @@ end
 local function show_move_platform(player_print)
     for _, surface in pairs(game.surfaces) do
         if surface.platform ~= nil and surface.platform.space_location == nil then
-            player_print.print(string.format("[gps=0,0,%s] ☞ %s", surface.name, surface.platform.name))
+            player_print.print(string.format("[gps=0,0,%s] %s", surface.name, surface.platform.name))
         end
     end
 end
@@ -363,7 +364,7 @@ local random_messages = {
     "▣ 天道禁制 ▣ 宗门不得交换物资 ※",
     "▣ 天道禁制 ▣ 宗门不得建设雷达 [entity=radar] ※",
     "▣ 天道禁制 ▣ 宗门不得超过三艘仙舟 ※",
-    "〓 [technology=automation-science-pack] 宗门 最长闭关时间为 [color=#ff3333]三个时辰[/color] 〓",
+    "〓 [technology=automation-science-pack] 宗门 最长闭关时间为 [color=#ff3333]六个时辰[/color] 〓",
     "〓 [technology=logistic-science-pack] 宗门 最长闭关时间为 [color=#ff3333]一天[/color] 〓",
     "〓 [technology=chemical-science-pack] 宗门 最长闭关时间为 [color=#ff3333]两天[/color] 〓",
     "〓 [technology=space-science-pack] 宗门 最长闭关时间为 [color=#ff3333]三天[/color] 〓",
@@ -495,12 +496,12 @@ script.on_event(defines.events.on_console_chat, function(event)
         return
     end
 
-    if message == "神识感应" or message == "在线的人" then
+    if message == "神识感应" or message == "在线的人" or message == "玩家" then
         show_online_player_postion(player)
         return
     end
 
-    if message == "观星寻舟" or message == "飞行的船" then
+    if message == "观星寻舟" or message == "飞行的船" or message == "平台" then
         show_move_platform(player)
         return
     end
@@ -635,25 +636,26 @@ local function get_distance(start_planet, target_planet)
 end
 
 local function max_min_left_of(force)
-    local max_offline_m = 2
-    if force.technologies["automation-science-pack"].researched
-    then
-        max_offline_m = 6
-    elseif force.technologies["logistic-science-pack"].researched then
-        max_offline_m = 24
-    elseif force.technologies["chemical-science-pack"].researched then
-        max_offline_m = 24 * 2
-    elseif force.technologies["space-science-pack"].researched then
-        max_offline_m = 24 * 3
+    local max_offline_m = 1
+    if force.technologies["promethium-science-pack"].researched then
+        max_offline_m = 24 * 7
     elseif force.technologies["cryogenic-science-pack"].researched then
         max_offline_m = 24 * 5
-    elseif force.technologies["promethium-science-pack"].researched then
-        max_offline_m = 24 * 7
+    elseif force.technologies["space-science-pack"].researched then
+        max_offline_m = 24 * 3
+    elseif force.technologies["chemical-science-pack"].researched then
+        max_offline_m = 24 * 2
+    elseif force.technologies["logistic-science-pack"].researched then
+        max_offline_m = 24
+    elseif force.technologies["automation-science-pack"].researched.researched then
+        max_offline_m = 12
+    else
+        max_offline_m = 6
     end
     return max_offline_m * 60
 end
 
-function notifyForce(info, time_str)
+function NotifyForce(info, time_str)
     local name = force_manager.get_force_name(info)
     if not info.canJoin then
         game.print(string.format("宗门 [color=#ffff00]%s[/color] 开始招收弟子", name))
@@ -702,21 +704,21 @@ script.on_event(defines.events.on_tick, function(event)
             local m_left = max_min_left_of(force) - min_offline_m
 
             if m_left == 24 * 60 then
-                notifyForce(info, "十二时辰")
+                NotifyForce(info, "十二时辰")
             elseif m_left == 12 * 60 then
-                notifyForce(info, "六个时辰")
+                NotifyForce(info, "六个时辰")
             elseif m_left == 6 * 60 then
-                notifyForce(info, "三个时辰")
+                NotifyForce(info, "三个时辰")
             elseif m_left == 2 * 60 then
-                notifyForce(info, "一个时辰")
+                NotifyForce(info, "一个时辰")
             elseif m_left == 1 * 60 then
-                notifyForce(info, "半个时辰")
+                NotifyForce(info, "半个时辰")
             elseif m_left == 30 then
-                notifyForce(info, "一炷香")
+                NotifyForce(info, "一炷香")
             elseif m_left == 15 then
-                notifyForce(info, "一刻钟")
+                NotifyForce(info, "一刻钟")
             elseif m_left == 1 then
-                notifyForce(info, "一分钟")
+                NotifyForce(info, "一分钟")
             end
 
             if m_left <= 0 then

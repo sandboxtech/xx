@@ -1151,7 +1151,7 @@ local function on_gui_click(event)
         -- 按吨位排序
         table.sort(ship_list, function(a, b) return a.weight > b.weight end)
 
-        player.print(force_manager.get_force_name(force) .. "的仙舟列表:")
+        player.print("宗门 [color=#ffff00]" .. force_manager.get_force_name(force) .. "[/color] 仙舟列表:")
         local total_weight = 0
         local ship_count = 0
         for _, ship in pairs(ship_list) do
