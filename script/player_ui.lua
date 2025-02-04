@@ -155,13 +155,13 @@ local function show_team_manage(player)
         style = "confirm_button"
     }
 
-    -- 回到仙舟内
-    button_flow.add {
-        type = "button",
-        name = "enter_space_platform",
-        caption = "进入仙舟",
-        style = "confirm_button"
-    }
+    -- -- 回到仙舟内
+    -- button_flow.add {
+    --     type = "button",
+    --     name = "enter_space_platform",
+    --     caption = "进入仙舟",
+    --     style = "confirm_button"
+    -- }
 
     -- 离开宗门按钮
     button_flow.add {

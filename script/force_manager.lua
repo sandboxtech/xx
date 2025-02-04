@@ -421,7 +421,7 @@ local herb_locations = {
 }
 
 local herb_names = {
-    "yumako", "jellynut", "wood", "spoilage",
+    "yumako", "jellynut", "wood", "spoilage", "pentapod-egg", "biter-egg",
 }
 
 local treasure_locations = {
@@ -465,7 +465,7 @@ local give_item = function(player, name, location, count)
     if not quality then quality = "normal" end
     player.insert { name = name, count = 1 }
     game.print("道友 [color=#00ffff]" .. player.name
-        .. "[/color]于" .. location
+        .. "[/color] 于" .. location
         .. "获得[item=" .. name .. ",quality=" .. random_qualities[math.random(#random_qualities)] .. "]")
 end
 
@@ -523,6 +523,11 @@ script.on_event(defines.events.on_console_chat, function(event)
 
     if message == "采矿" or message == "采石" or message == "挖矿" then
         give_item(player, ore_names[math.random(#ore_names)], seed_location(ore_locations, 1232))
+        return
+    end
+
+    if message == "采药" then
+        give_item(player, herb_names[math.random(#herb_names)], seed_location(herb_locations, 1233))
         return
     end
 
@@ -829,7 +834,7 @@ script.on_event(defines.events.on_tick, function(event)
                                     socre = socre,
                                     distance = distance,
                                 }
-                                game.print(string.format("%s%s突破了神游[space-location=%s]重量记录(%.1f吨), 前往神游榜查看",
+                                game.print(string.format("[color=#00ffff]%s[/color]%s突破了神游[space-location=%s]重量记录(%.1f吨), 前往神游榜查看",
                                     player.name, player.tag, name, weight))
                             end
 

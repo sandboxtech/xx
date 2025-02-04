@@ -189,13 +189,13 @@ end
 
 -- 雷神星特产
 local function fulgora_create_specical(surface, x, y, mx, my)
-    if mx >= 20 and mx <= size - 84 and my >= 20 and my <= size - 84 and (mx + 12) % 40 == 0 and (my + 12) % 40 == 0 then
-        surface.create_entity({
-            name = "fulgoran-ruin-attractor",
-            position = { x, y },
-            force = "player",
-        })
-    end
+    -- if mx >= 20 and mx <= size - 84 and my >= 20 and my <= size - 84 and (mx + 12) % 40 == 0 and (my + 12) % 40 == 0 then
+    --     surface.create_entity({
+    --         name = "fulgoran-ruin-attractor",
+    --         position = { x, y },
+    --         force = "player",
+    --     })
+    -- end
 end
 
 -- 祝融星特产
