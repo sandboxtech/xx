@@ -363,7 +363,6 @@ local random_messages = {
     "※ 筑自动化洞府生产线，开宗立派广纳门众 ※",
     "▣ 天道禁制 ▣ 宗门不得交换物资 ※",
     "▣ 天道禁制 ▣ 宗门不得建设雷达 [entity=radar] ※",
-    "▣ 天道禁制 ▣ 宗门不得超过三艘仙舟 ※",
     "〓 [technology=automation-science-pack] 宗门 最长闭关时间为 [color=#ff3333]六个时辰[/color] 〓",
     "〓 [technology=logistic-science-pack] 宗门 最长闭关时间为 [color=#ff3333]一天[/color] 〓",
     "〓 [technology=chemical-science-pack] 宗门 最长闭关时间为 [color=#ff3333]两天[/color] 〓",
@@ -548,26 +547,26 @@ script.on_event(defines.events.on_console_chat, function(event)
         return
     end
 
-    -- 开头为"速度"时，设置速度
-    if event.message:sub(1, 6) == "速度" then
-        local speed = tonumber(event.message:sub(7))
-        if speed ~= nil then
-            if speed < 0 then
-                speed = 0
-            end
+    -- -- 开头为"速度"时，设置速度
+    -- if event.message:sub(1, 6) == "速度" then
+    --     local speed = tonumber(event.message:sub(7))
+    --     if speed ~= nil then
+    --         if speed < 0 then
+    --             speed = 0
+    --         end
 
-            local index = level.get_index(player)
-            local max_speed = index * 110
-            if speed > max_speed then
-                speed = max_speed
-            end
-            if storage.speed_set == nil then
-                storage.speed_set = {}
-            end
-            storage.speed_set[player.name] = level.get_speed(speed) / 60
-            player.print(string.format("道友 [color=#00ffff]%s[/color] %s设置所在仙舟速度为%.2fkm/s", player.name, player.tag, speed))
-        end
-    end
+    --         local index = level.get_index(player)
+    --         local max_speed = index * 110
+    --         if speed > max_speed then
+    --             speed = max_speed
+    --         end
+    --         if storage.speed_set == nil then
+    --             storage.speed_set = {}
+    --         end
+    --         storage.speed_set[player.name] = level.get_speed(speed) / 60
+    --         player.print(string.format("道友 [color=#00ffff]%s[/color] %s设置所在仙舟速度为%.2fkm/s", player.name, player.tag, speed))
+    --     end
+    -- end
 
     -- 自定义消息格式
     local force_name = force_manager.get_force_name(player.force)
