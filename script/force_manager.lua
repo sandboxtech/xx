@@ -642,6 +642,7 @@ end
 
 local function max_min_left_of(force)
     local max_offline_m = 1
+
     if force.technologies["promethium-science-pack"].researched then
         max_offline_m = 24 * 7
     elseif force.technologies["cryogenic-science-pack"].researched then
@@ -652,7 +653,7 @@ local function max_min_left_of(force)
         max_offline_m = 24 * 2
     elseif force.technologies["logistic-science-pack"].researched then
         max_offline_m = 24
-    elseif force.technologies["automation-science-pack"].researched.researched then
+    elseif force.technologies["automation-science-pack"].researched then
         max_offline_m = 12
     else
         max_offline_m = 6
