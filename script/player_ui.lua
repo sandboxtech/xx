@@ -601,6 +601,7 @@ local function show_tech_rank(player)
         local value = (max_level_info.level + 1) / 2 * max_level_info.level
         local count = max_level_info.level
         local index = max_level_info.level
+        -- value = math.max(value, 10000)
         if count > 10 then
             count = 10
         end
