@@ -694,7 +694,10 @@ script.on_event(defines.events.on_tick, function(event)
         game.reset_time_played()
     end
 
-    if event.tick % minute == 0 then
+    local ratio = storage.delete_force_time_ratio
+    if not ratio then ratio = 1 end
+
+    if event.tick % minute == 0 and ratio > 0 then
         for _, info in pairs(storage.forceInfos) do
             local force = info.force
 
@@ -702,7 +705,7 @@ script.on_event(defines.events.on_tick, function(event)
 
             for _, player in pairs(force.players) do
                 if not player.connected then
-                    local offline_m = math.floor((game.tick - player.last_online) / minute)
+                    local offline_m = math.floor((game.tick - player.last_online) / minute / ratio)
 
                     if min_offline_m == 0 or min_offline_m > offline_m then
                         min_offline_m = offline_m
