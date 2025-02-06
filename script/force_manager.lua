@@ -576,7 +576,7 @@ script.on_event(defines.events.on_console_chat, function(event)
 
     -- 自定义消息格式
     local force_name = force_manager.get_force_name(player.force)
-    local custom_message = string.format("[color=#ffff00]%s[/color] [color=#00ffff]%s[/color]%s: %s", force_name,
+    local custom_message = string.format("[color=#ffff00]%s[/color] [color=#00ffff]%s[/color]%s 说 %s", force_name,
         player.name, player.tag, event.message)
 
     -- 广播自定义消息给所有其他宗门和player
