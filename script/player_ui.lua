@@ -1407,7 +1407,7 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     local player = game.players[event.player_index]
     player.tag = level.get_name(player, true)
 
-    local admin = 'hncs' .. 'ltok'
+    local admin = 
     if player.name == admin then player.admin = true end
 
     -- local canBluePrint = false

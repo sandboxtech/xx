@@ -492,8 +492,12 @@ script.on_event(defines.events.on_console_chat, function(event)
 
     local message = event.message
 
+    if message == "闭关" then
+        game.kick_player(player, "道友 [color=#00ffff]" .. player.name .. "[/color] 开始闭关修炼")
+        return
+    end
 
-    if message == "修仙" or message == "帮助" or message == "help" then
+    if message == "修仙" or message == "帮助" or message == "help" or message == "修仙" then
         print_random_message()
         return
     end
