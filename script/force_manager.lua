@@ -329,7 +329,7 @@ script.on_event(defines.events.on_surface_created, function(event)
     local platform = surface.platform
     if platform then
         mgs.width = 256
-        mgs.height = 256
+        mgs.height = 512
     end
 
     surface.map_gen_settings = mgs
@@ -351,7 +351,10 @@ end
 -- 观星寻舟
 local function show_move_platform(player_print)
     for _, surface in pairs(game.surfaces) do
-        if surface.platform ~= nil and surface.platform.space_location == nil then
+        -- if surface.platform ~= nil and surface.platform.space_location == nil then
+        --     player_print.print(string.format("[gps=0,0,%s] %s", surface.name, surface.platform.name))
+        -- end
+        if surface.platform ~= nil then
             player_print.print(string.format("[gps=0,0,%s] %s", surface.name, surface.platform.name))
         end
     end
@@ -373,7 +376,7 @@ local random_messages = {
     "※ 宗门无人，当坠[color=#ff00ff]归墟[/color]，湮灭于星海",
     "▶ 输入「神识感应」可查诸天同道方位",
     "▶ 输入「观星寻舟」可窥虚空仙舰轨迹",
-    "▶ 输入「钓鱼」「伐木」「采矿」「采药」「寻宝」",
+    "▶ 输入「钓鱼」「伐木」「采矿」「采药」「捕猎」",
 }
 
 function print_random_message()
@@ -420,7 +423,7 @@ local herb_locations = {
 }
 
 local herb_names = {
-    "yumako", "jellynut", "wood", "spoilage", "pentapod-egg", "biter-egg",
+    "yumako", "jellynut", "wood", "spoilage",
 }
 
 local treasure_locations = {
@@ -434,7 +437,7 @@ local treasure_locations = {
 }
 
 local treasure_names = {
-    "scrap", "scrap", "scrap", "scrap", "scrap", "scrap", "scrap",
+    "scrap", "iron-bacteria", "copper-bacteria", "pentapod-egg", "biter-egg",
     -- "beacon",
     -- "medium-electric-pole",
     -- "productivity-module",
@@ -535,7 +538,10 @@ script.on_event(defines.events.on_console_chat, function(event)
         return
     end
 
-    if message == "寻宝" then
+    if message == "捕猎" or message == "捕猎" then
+        if not player.force.technologies['biter-egg-handling'].researched then
+            player.force.technologies['biter-egg-handling'].researched = true
+        end
         give_item(player, treasure_names[math.random(#treasure_names)], seed_location(treasure_locations, 1234))
         return
     end
@@ -834,7 +840,8 @@ script.on_event(defines.events.on_tick, function(event)
                                     socre = socre,
                                     distance = distance,
                                 }
-                                game.print(string.format("[color=#00ffff]%s[/color]%s突破了神游[space-location=%s]重量记录(%.1f吨), 前往神游榜查看",
+                                game.print(string.format(
+                                    "[color=#00ffff]%s[/color]%s突破了神游[space-location=%s]重量记录(%.1f吨), 前往神游榜查看",
                                     player.name, player.tag, name, weight))
                             end
 
