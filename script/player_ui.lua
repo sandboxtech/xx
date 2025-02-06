@@ -179,15 +179,15 @@ local function show_team_manage(player)
         style = "confirm_button"
     }
 
-    if player.admin then
-        -- 销毁宗门按钮
-        button_flow.add {
-            type = "button",
-            name = "destroy_team",
-            caption = "销毁宗门",
-            style = "red_button"
-        }
-    end
+    -- if player.admin then
+    --     -- 销毁宗门按钮
+    --     button_flow.add {
+    --         type = "button",
+    --         name = "destroy_team",
+    --         caption = "销毁宗门",
+    --         style = "red_button"
+    --     }
+    -- end
 end
 
 -- 境界提升确认界面
@@ -195,9 +195,10 @@ local function show_level_up_confirm(player)
     -- 检测是否到破碎星系
     if player.character == nil or
         player.character.surface.platform.space_location == nil or
-        player.character.surface.platform.space_location.name ~= "shattered-planet" then
-        -- player.surface.platform.space_location.name ~= "solar-system-edge" then
-        player.print("你当前不在[space-location=shattered-planet],无法转生提升境界")
+        -- player.character.surface.platform.space_location.name ~= "shattered-planet" then
+        -- player.print("你当前不在[space-location=shattered-planet],无法转生提升境界")
+        player.surface.platform.space_location.name ~= "solar-system-edge" then
+        player.print("你当前不在[space-location=solar-system-edge],无法转生提升境界")
         return
     end
 
@@ -1032,8 +1033,8 @@ local function create_new_team(player, team_name)
         return false
     end
 
-    -- 名字长度不超过40个字符
-    if #team_name > 40 then
+    -- 名字长度不超过64个字符
+    if #team_name > 64 then
         player.print("你的宗门名太长了", { r = 1 })
         return false
     end
@@ -1048,7 +1049,7 @@ local function create_new_team(player, team_name)
 
     -- 将玩家加入新宗门
     player.force = force
-    game.print(player.name .. " 创建并加入了宗门: " .. team_name)
+    game.print("道友 [color=#00ffff]" .. player.name .. "[/color] 创建并加入了 宗门 [color=#ffff00]" .. team_name .. "[/color]")
 
 
     -- 火箭射速增加

@@ -131,8 +131,8 @@ force_manager.create_force = function(name, spawn_surface)
     force.technologies["artillery"].enabled = false
     force.technologies["artillery-shell-damage-1"].enabled = false
     force.technologies["artillery-shell-range-1"].enabled = false
-    -- force.technologies["logistic-system"].enabled = false
-    -- force.technologies["logistic-system"].visible_when_disabled = true
+    force.technologies["logistic-system"].enabled = false
+    force.technologies["logistic-system"].visible_when_disabled = true
 
     force.technologies["atomic-bomb"].enabled = false
 
