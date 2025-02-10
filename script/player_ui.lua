@@ -1191,7 +1191,7 @@ local function on_gui_click(event)
 
         local force_name = element.name:sub(12)
         local force_info = storage.forceInfos[force_name]
-        game.print(player.name .. " 加入了宗门: " .. force_info.name)
+        game.print("[color=#00ffff]" .. player.name .. "[/color] 加入了宗门 [color=#ffff00]" .. force_info.name .. "[/color]")
 
         player.force = storage.forceInfos[force_name].force
 
