@@ -294,8 +294,8 @@ force_manager.destroy_force = function(force, no_clear_inside)
     for i = 1, #force.platforms do
         local hub = force.platforms[i].hub
         if hub then
-            -- hub.damage(100000000, "enemy")
-            hub.destroy()
+            hub.damage(100000000, "enemy")
+            -- hub.destroy()
         end
     end
 
