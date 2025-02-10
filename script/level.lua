@@ -174,7 +174,7 @@ function level.set_tech_level(player)
         local count = nauvis_count
         force.technologies["mining-productivity-3"].level = count + 3
         force.technologies["steel-plate-productivity"].level = count + 1
-        game.print(string.format("%s在[planet=nauvis]重生%d次", player.name, nauvis_count))
+        game.print(string.format("%s 在[planet=nauvis]重生%d次", player.name, nauvis_count))
         game.print(string.format("[technology=mining-productivity-3]自动解锁%d次", count))
         game.print(string.format("[technology=steel-plate-productivity]自动解锁%d次\n", count))
     end
@@ -183,7 +183,7 @@ function level.set_tech_level(player)
         local count = fulgora_count
         force.technologies["processing-unit-productivity"].level = count + 1
         force.technologies["scrap-recycling-productivity"].level = count + 1
-        game.print(string.format("%s在[planet=fulgora]重生%d次", player.name, fulgora_count))
+        game.print(string.format("%s 在[planet=fulgora]重生%d次", player.name, fulgora_count))
         game.print(string.format("[technology=processing-unit-productivity]自动解锁%d次", count))
         game.print(string.format("[technology=scrap-recycling-productivity]自动解锁%d次\n", count))
     end
@@ -191,7 +191,7 @@ function level.set_tech_level(player)
     if vulcanus_count > 0 then
         local count = vulcanus_count
         force.technologies["low-density-structure-productivity"].level = count + 1
-        game.print(string.format("%s在[planet=vulcanus]重生%d次", player.name, vulcanus_count))
+        game.print(string.format("%s 在[planet=vulcanus]重生%d次", player.name, vulcanus_count))
         game.print(string.format("[technology=low-density-structure-productivity]自动解锁%d次\n", count))
     end
 
@@ -200,7 +200,7 @@ function level.set_tech_level(player)
         force.technologies["rocket-fuel-productivity"].level = count + 1
         force.technologies["plastic-bar-productivity"].level = count + 1
         force.technologies["asteroid-productivity"].level = count + 1
-        game.print(string.format("%s在[planet=gleba]重生%d次", player.name, gleba_count))
+        game.print(string.format("%s 在[planet=gleba]重生%d次", player.name, gleba_count))
         game.print(string.format("[technology=rocket-fuel-productivity]自动解锁%d次", count))
         game.print(string.format("[technology=plastic-bar-productivity]自动解锁%d次", count))
         game.print(string.format("[technology=asteroid-productivity]自动解锁%d次", count))

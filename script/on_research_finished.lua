@@ -5,6 +5,8 @@ script.on_event(defines.events.on_research_finished, function(event)
     local force = research.force
     if not force then return end
 
+    if event.by_script then return end
+    
     game.print(string.format(
         "宗门 [color=#ffff00]%s[/color] 掌握 [technology=%s]",
         force_manager.get_force_name(force), research.name))
