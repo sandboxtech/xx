@@ -202,16 +202,16 @@ local function show_level_up_confirm(player)
         return
     end
 
-    local time = storage.speed_rank[player.name].curr_time;
-    local speed = math.floor(4000000 / time * 100) / 100
-    local index = level.get_index(player)
-    local try_time = storage.speed_rank[player.name].try_time
-    local min_speed = math.floor((index - try_time / 2 - 1) * 100)
-    if speed < min_speed then
-        player.print("当前平均速" .. speed .. "度低于" .. min_speed .. "km/s，无法转生提升境界")
-        player.print("速度限制已降低50km/s，请返回星系边缘后重试")
-        return
-    end
+    -- local time = storage.speed_rank[player.name].curr_time;
+    -- local speed = math.floor(4000000 / time * 100) / 100
+    -- local index = level.get_index(player)
+    -- local try_time = storage.speed_rank[player.name].try_time
+    -- local min_speed = math.floor((index - try_time / 2 - 1) * 100)
+    -- if speed < min_speed then
+    --     player.print("当前平均速" .. speed .. "度低于" .. min_speed .. "km/s，无法转生提升境界")
+    --     player.print("速度限制已降低50km/s，请返回星系边缘后重试")
+    --     return
+    -- end
 
 
     if player.gui.screen["level_up_frame"] then
