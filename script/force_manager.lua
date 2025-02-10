@@ -855,14 +855,14 @@ script.on_event(defines.events.on_tick, function(event)
                             player.print(string.format("神游[space-location=%s]分数:%d,重量:%.1f吨,速度:%.2fkm/s", name, socre,
                                 weight, distance / time))
 
-                            if platform.space_location.name == "shattered-planet" then
-                                if storage.speed_rank[player.name].try_time == nil then
-                                    storage.speed_rank[player.name].try_time = 0
-                                end
-                                storage.speed_rank[player.name].try_time = storage.speed_rank[player.name].try_time +
-                                    1;
-                                game.print(string.format("%s%s到达破碎星球，下次速度要求降低50km/s", player.name, player.tag));
-                            end
+                            -- if platform.space_location.name == "shattered-planet" then
+                            --     if storage.speed_rank[player.name].try_time == nil then
+                            --         storage.speed_rank[player.name].try_time = 0
+                            --     end
+                            --     storage.speed_rank[player.name].try_time = storage.speed_rank[player.name].try_time +
+                            --         1;
+                            --     game.print(string.format("%s%s到达破碎星球，下次速度要求降低50km/s", player.name, player.tag));
+                            -- end
 
                             storage.speed_rank[player.name].curr_time = time -- 最近一次耗时
                             storage.speed_rank[player.name].start_planet = target_planet

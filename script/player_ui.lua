@@ -376,28 +376,28 @@ local function show_level_up(player)
         style = "label"
     }
 
-    if index > 1 then
-        if storage.speed_rank[player.name].try_time == nil then
-            storage.speed_rank[player.name].try_time = 0
-        end
+    -- if index > 1 then
+    --     if storage.speed_rank[player.name].try_time == nil then
+    --         storage.speed_rank[player.name].try_time = 0
+    --     end
 
-        local diff = 0
-        if player.character and player.character.surface and
-            player.character.surface.platform and
-            player.character.surface.platform.space_location and
-            player.character.surface.platform.space_location.name == "shattered-planet" then
-            diff = 1
-        end
+    --     local diff = 0
+    --     if player.character and player.character.surface and
+    --         player.character.surface.platform and
+    --         player.character.surface.platform.space_location and
+    --         player.character.surface.platform.space_location.name == "shattered-planet" then
+    --         diff = 1
+    --     end
 
-        local try_time = storage.speed_rank[player.name].try_time - diff
+    --     local try_time = storage.speed_rank[player.name].try_time - diff
 
-        local min_speed = math.floor((index - try_time / 2 - 1) * 100)
-        frame.add {
-            type = "label",
-            caption = "边缘到破碎平均速度低于" .. min_speed .. "km/s无法转生，到达后速度要求降低50km/s",
-            style = "label"
-        }
-    end
+    --     local min_speed = math.floor((index - try_time / 2 - 1) * 100)
+    --     frame.add {
+    --         type = "label",
+    --         caption = "边缘到破碎平均速度低于" .. min_speed .. "km/s无法转生，到达后速度要求降低50km/s",
+    --         style = "label"
+    --     }
+    -- end
 
     -- 添加一个转生按钮
     local all_have_str = "_no"
@@ -1532,7 +1532,7 @@ script.on_event(defines.events.on_space_platform_built_tile, function(event)
     end
 
     if weight_sum > (max_level + 3) * 1000 * 1000 then
-        game.print("▣ 仙舟总重量不能超过" .. ((max_level + 3) * 1000) .. "万钧")
+        game.print("▣ 仙舟总重量不能超过" .. ((max_level + 3) * 1000) .. "吨")
         for _, info in pairs(event.tiles) do
             surface.set_tiles({ {
                 name = info.old_tile,

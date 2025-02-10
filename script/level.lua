@@ -255,7 +255,7 @@ function level.up(player)
         end
     end
     storage.speed_rank[player.name].add = nil
-    storage.speed_rank[player.name].try_time = 0
+    -- storage.speed_rank[player.name].try_time = 0
     storage.up_level_item[player.name] = nil
     storage.levels[player.name] = index + 1
     player.tag = level.get_name(player, true)
