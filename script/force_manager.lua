@@ -242,7 +242,7 @@ force_manager.destroy_force = function(force, no_clear_inside)
         -- 关闭已加入玩家界面
         if player.gui.left["joined_team_frame"] then player.gui.left["joined_team_frame"].destroy() end
 
-        game.print("道友 [color=#00ffff]" .. player.name .. "[/color] 转生，未能提升境界")
+        game.print("道友 [color=#00ffff]" .. player.name .. "[/color] 转生")
 
         -- 创建玩家界面
         ui.create_team_buttons(player)
