@@ -362,7 +362,8 @@ local function show_level_up(player)
     -- 滚动板下方添加一行说明标签
     frame.add {
         type = "label",
-        caption = "乘坐仙舟携带所需道具前往[space-location=shattered-planet]转生提升境界",
+        -- caption = "乘坐仙舟携带所需道具前往[space-location=shattered-planet]转生提升境界",
+        caption = "乘坐仙舟携带所需道具前往[space-location=solar-system-edge]转生提升境界",
         style = "label"
     }
 
