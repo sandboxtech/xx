@@ -464,11 +464,12 @@ local random_qualities = {
 
 local give_item = function(player, name, location, count)
     if not count then count = 1 end
+    local quality = random_qualities[math.random(#random_qualities)]
     if not quality then quality = "normal" end
-    player.insert { name = name, count = 1 }
+    player.insert { name = name, count = 1, quality = quality }
     game.print("道友 [color=#00ffff]" .. player.name
         .. "[/color] 于" .. location
-        .. "获得[item=" .. name .. ",quality=" .. random_qualities[math.random(#random_qualities)] .. "]")
+        .. "获得[item=" .. name .. ",quality=" .. quality .. "]")
 end
 
 local seed_location = function(locations, seed)
