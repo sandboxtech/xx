@@ -254,13 +254,10 @@ function level.up(player)
             player.insert(stack)
         end
     end
-    storage.speed_rank[player.name].add = nil
-    -- storage.speed_rank[player.name].try_time = 0
     storage.up_level_item[player.name] = nil
     storage.levels[player.name] = index + 1
     player.tag = level.get_name(player, true)
 
-    storage.speed_rank[player.name].start_planet = nil -- 清除起点
     game.print(string.format("〓 星域传音 〓  恭喜 [color=#00ffff]%s[/color] 突破至 %s[gps=%d,%d,%s]", player.name, level.get_name(player, true), player.position.x,
         player.position.y, surface_name))
 end

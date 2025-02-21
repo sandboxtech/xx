@@ -88,20 +88,6 @@ local function show_joined_player_ui(player)
         caption = "战力榜",
     }
 
-    -- 创建一个神游榜按钮
-    frame.add {
-        type = "button",
-        name = "speed_rank_button",
-        caption = "神游榜",
-    }
-
-    -- -- 创建一个虫族挑战按钮
-    -- frame.add{
-    --     type = "button",
-    --     name = "bug_challenge_button",
-    --     caption = "虫族挑战",
-    -- }
-
     -- 添加允许加入复选框
     frame.add {
         type = "checkbox",
@@ -201,18 +187,6 @@ local function show_level_up_confirm(player)
         player.print("你当前不在[space-location=solar-system-edge],无法转生提升境界")
         return
     end
-
-    -- local time = storage.speed_rank[player.name].curr_time;
-    -- local speed = math.floor(4000000 / time * 100) / 100
-    -- local index = level.get_index(player)
-    -- local try_time = storage.speed_rank[player.name].try_time
-    -- local min_speed = math.floor((index - try_time / 2 - 1) * 100)
-    -- if speed < min_speed then
-    --     player.print("当前平均速" .. speed .. "度低于" .. min_speed .. "km/s，无法转生提升境界")
-    --     player.print("速度限制已降低50km/s，请返回星系边缘后重试")
-    --     return
-    -- end
-
 
     if player.gui.screen["level_up_frame"] then
         player.gui.screen["level_up_frame"].destroy()
@@ -376,29 +350,6 @@ local function show_level_up(player)
         caption = "提示:转生将献祭宗门，仙舟轨道投送区前" .. (count) .. "格物品会被转生者带走",
         style = "label"
     }
-
-    -- if index > 1 then
-    --     if storage.speed_rank[player.name].try_time == nil then
-    --         storage.speed_rank[player.name].try_time = 0
-    --     end
-
-    --     local diff = 0
-    --     if player.character and player.character.surface and
-    --         player.character.surface.platform and
-    --         player.character.surface.platform.space_location and
-    --         player.character.surface.platform.space_location.name == "shattered-planet" then
-    --         diff = 1
-    --     end
-
-    --     local try_time = storage.speed_rank[player.name].try_time - diff
-
-    --     local min_speed = math.floor((index - try_time / 2 - 1) * 100)
-    --     frame.add {
-    --         type = "label",
-    --         caption = "边缘到破碎平均速度低于" .. min_speed .. "km/s无法转生，到达后速度要求降低50km/s",
-    --         style = "label"
-    --     }
-    -- end
 
     -- 添加一个转生按钮
     local all_have_str = "_no"
@@ -666,275 +617,6 @@ local function show_tech_rank(player)
     end
 end
 
--- 神游榜界面
-local function show_speed_rank(player)
-    if player.gui.screen["speed_rank_frame"] then
-        player.gui.screen["speed_rank_frame"].destroy()
-        return
-    end
-
-    if storage.speed_rank == nil then
-        storage.speed_rank = {}
-    end
-
-    if storage.speed_rank[player.name] == nil then
-        storage.speed_rank[player.name] = {}
-    end
-
-    if storage.speed_rank[player.name].rank_type == nil then
-        storage.speed_rank[player.name].rank_type = "score"
-    end
-
-    if storage.speed_rank[player.name].rank_planet == nil then
-        storage.speed_rank[player.name].rank_planet = "shattered-planet"
-    end
-
-    local rank_type = storage.speed_rank[player.name].rank_type
-    local rank_planet = storage.speed_rank[player.name].rank_planet
-
-
-    local frame = player.gui.screen.add {
-        type = "frame",
-        name = "speed_rank_frame",
-        direction = "vertical",
-    }
-
-    -- 设置窗口位置在屏幕中间
-    frame.force_auto_center()
-
-    -- 固定的标题行（水平流）
-    local title_flow = frame.add {
-        type = "flow",
-        direction = "horizontal",
-        style = "horizontal_flow"
-    }
-
-    -- 添加标题
-    title_flow.add {
-        type = "label",
-        caption = "神游榜",
-        style = "frame_title"
-    }
-
-    -- 添加选择星球按钮
-    local button1 = title_flow.add {
-        type = "button",
-        name = "select_planet_shattered-planet",
-        caption = "[space-location=shattered-planet]",
-    }
-
-    local button2 = title_flow.add {
-        type = "button",
-        name = "select_planet_solar-system-edge",
-        caption = "[space-location=solar-system-edge]",
-    }
-
-    local button3 = title_flow.add {
-        type = "button",
-        name = "select_planet_aquilo",
-        caption = "[space-location=aquilo]",
-    }
-
-    local button4 = title_flow.add {
-        type = "button",
-        name = "select_planet_nauvis",
-        caption = "[space-location=nauvis]",
-    }
-
-    button1.style.minimal_width = 32
-    button2.style.minimal_width = 32
-    button3.style.minimal_width = 32
-    button4.style.minimal_width = 32
-
-
-    -- 添加空白填充元素(可拖动)
-    local filler = title_flow.add {
-        type = "empty-widget",
-        style = "draggable_space"
-    }
-    filler.style.horizontally_stretchable = true
-    filler.style.minimal_width = 100
-    filler.style.size = { 154, 24 }
-    filler.drag_target = frame
-
-
-    -- 添加关闭按钮到标题行
-    title_flow.add {
-        type = "button",
-        name = "close_speed_rank",
-        caption = "关闭",
-        style = "back_button"
-    }
-
-    -- 创建可滚动的内容面板
-    local scroll_pane = frame.add {
-        type = "scroll-pane",
-        name = "speed_rank_scroll",
-        horizontal_scroll_policy = "never",
-        vertical_scroll_policy = "auto-and-reserve-space"
-    }
-
-    -- 在滚动面板中创建表格
-    local table_item = scroll_pane.add {
-        type = "table",
-        name = "speed_rank_table",
-        column_count = 6
-    }
-
-    -- 添加表头
-    table_item.add { type = "label", caption = "排名" }.style.minimal_width = 40
-    table_item.add { type = "label", caption = "星球" }.style.minimal_width = 40
-    table_item.add { type = "label", caption = "玩家" }.style.minimal_width = 120
-    table_item.add { type = "button", caption = "分数", name = "speed_rank_score" }.style.minimal_width = 80
-    table_item.add { type = "button", caption = "速度", name = "speed_rank_speed" }.style.minimal_width = 120
-    table_item.add { type = "button", caption = "重量", name = "speed_rank_weight" }.style.minimal_width = 80
-
-    -- 获取神游榜数据
-    local speed_rank = storage.speed_rank
-    if speed_rank == nil then
-        return
-    end
-
-    local data_list = {}
-
-    for player_name, rank_data in pairs(speed_rank) do
-        for planet_name, planet_data in pairs(rank_data) do
-            -- 如果planet_datas是table
-            if type(planet_data) == "table" and planet_data.socre ~= nil then
-                if planet_name == rank_planet and rank_type == "score" then
-                    table.insert(data_list,
-                        { player_name = player_name, planet_name = planet_name, planet_data = planet_data })
-                end
-                if planet_name == rank_planet and rank_type == "speed" then
-                    local data = planet_data.min_time
-                    if data == nil or data.time > planet_data.time then data = planet_data end
-                    table.insert(data_list, { player_name = player_name, planet_name = planet_name, planet_data = data })
-                end
-                if planet_name == rank_planet and rank_type == "weight" then
-                    local data = planet_data.min_weight
-                    if data == nil or data.weight > planet_data.weight then data = planet_data end
-                    table.insert(data_list, { player_name = player_name, planet_name = planet_name, planet_data = data })
-                end
-            end
-        end
-    end
-
-    -- 按分数排序
-    if rank_type == "speed" then
-        table.sort(data_list, function(a, b)
-            if a.planet_data.distance / a.planet_data.time == b.planet_data.distance / b.planet_data.time then
-                return a.planet_data.weight < b.planet_data.weight
-            end
-            return a.planet_data.distance / a.planet_data.time > b.planet_data.distance / b.planet_data.time
-        end)
-    elseif rank_type == "weight" then
-        table.sort(data_list, function(a, b)
-            if a.planet_data.weight == b.planet_data.weight then
-                return a.planet_data.distance / a.planet_data.time > b.planet_data.distance / b.planet_data.time
-            end
-            return a.planet_data.weight < b.planet_data.weight
-        end)
-    else
-        table.sort(data_list, function(a, b) return a.planet_data.socre > b.planet_data.socre end)
-    end
-
-
-    for rank, data in ipairs(data_list) do
-        local player2 = game.players[data.player_name]
-        local socre = data.planet_data.socre
-        local distance = data.planet_data.distance
-        local weight = data.planet_data.weight
-        local time = data.planet_data.time
-        table_item.add { type = "label", caption = rank }
-        table_item.add { type = "label", caption = "[space-location=" .. data.planet_name .. "]" }
-        table_item.add { type = "label", caption = player2.name .. player2.tag }
-        table_item.add { type = "label", caption = math.floor(socre) }
-        table_item.add { type = "label", caption = (math.floor(distance / time * 100) / 100) .. "km/s" }
-        table_item.add { type = "label", caption = weight .. "吨" }
-    end
-end
-
--- 虫族挑战界面
-local function show_bug_challenge(player)
-    if player.gui.screen["bug_challenge_frame"] then
-        player.gui.screen["bug_challenge_frame"].destroy()
-        return
-    end
-
-    local frame = player.gui.screen.add {
-        type = "frame",
-        name = "bug_challenge_frame",
-        direction = "vertical",
-    }
-
-    -- 设置窗口位置在屏幕中间
-    frame.force_auto_center()
-
-    -- 固定的标题行（水平流）
-    local title_flow = frame.add {
-        type = "flow",
-        direction = "horizontal",
-        style = "horizontal_flow"
-    }
-
-    -- 添加标题
-    title_flow.add {
-        type = "label",
-        caption = "虫族挑战",
-        style = "frame_title"
-    }
-
-    -- 添加开始挑战按钮
-    local button = title_flow.add {
-        type = "button",
-        name = "start_bug_challenge",
-        caption = "开始挑战",
-        style = "confirm_button"
-    }
-    button.style.minimal_width = 64
-
-    -- 添加空白填充元素(可拖动)
-    local filler = title_flow.add {
-        type = "empty-widget",
-        style = "draggable_space"
-    }
-    filler.style.horizontally_stretchable = true
-    filler.style.minimal_width = 100
-    filler.style.size = { 154, 24 }
-    filler.drag_target = frame
-
-    -- 添加关闭按钮到标题行
-    title_flow.add {
-        type = "button",
-        name = "close_bug_challenge",
-        caption = "关闭",
-        style = "back_button"
-    }
-
-    -- 创建可滚动的内容面板
-    local scroll_pane = frame.add {
-        type = "scroll-pane",
-        name = "bug_challenge_scroll",
-        horizontal_scroll_policy = "never",
-        vertical_scroll_policy = "auto-and-reserve-space"
-    }
-
-    -- 在滚动面板中创建表格
-    local table_item = scroll_pane.add {
-        type = "table",
-        name = "bug_challenge_table",
-        column_count = 7
-    }
-
-    -- 添加表头
-    table_item.add { type = "label", caption = "排名" }.style.minimal_width = 40
-    table_item.add { type = "label", caption = "玩家" }.style.minimal_width = 120
-    table_item.add { type = "button", caption = "单局击杀", name = "bug_challenge_single_kill" }.style.minimal_width = 120
-    table_item.add { type = "button", caption = "累计击杀", name = "bug_challenge_total_kill" }.style.minimal_width = 80
-    table_item.add { type = "button", caption = "境界", name = "bug_challenge_level" }.style.minimal_width = 80
-    table_item.add { type = "button", caption = "状态", name = "bug_challenge_online" }.style.minimal_width = 80
-    table_item.add { type = "button", caption = "观战", name = "bug_challenge_watch" }.style.minimal_width = 80
-end
 
 -- 创建新宗门界面
 local function show_create_team_dialog(player)
@@ -1063,7 +745,6 @@ local function create_new_team(player, team_name)
     rocket_speed = rocket_speed + (index - 1) * 0.2
     force.set_gun_speed_modifier("rocket", rocket_speed)
     player.print("火箭射速增加" .. ((index - 1) * 20) .. "%")
-    storage.speed_rank[player.name].add = true;
 
     -- 设置科技等级
     level.set_tech_level(player)
@@ -1224,27 +905,9 @@ local function on_gui_click(event)
             -- 显示宗门按钮
             create_team_buttons(player)
         end
-    elseif element.name == "speed_rank_button" then           -- 神游榜
-        if (player.force.name == "player") then
-            player.gui.center["team_buttons_frame"].destroy() -- 销毁宗门按钮
-        end
-        show_speed_rank(player)
-    elseif element.name == "bug_challenge_button" then        -- 虫族挑战
-        if (player.force.name == "player") then
-            player.gui.center["team_buttons_frame"].destroy() -- 销毁宗门按钮
-        end
-        show_bug_challenge(player)
     elseif element.name == "close_bug_challenge" then
         if player.gui.screen["bug_challenge_frame"] then
             player.gui.screen["bug_challenge_frame"].destroy()
-        end
-    elseif element.name == "close_speed_rank" then
-        if player.gui.screen["speed_rank_frame"] then
-            player.gui.screen["speed_rank_frame"].destroy()
-        end
-        if (player.force.name == "player") then
-            -- 显示宗门按钮
-            create_team_buttons(player)
         end
     elseif element.name == "teleport_to_spawn" then
         if player.character == nil then
@@ -1370,34 +1033,6 @@ local function on_gui_click(event)
         create_team_buttons(player)        -- 显示创建宗门界面
     elseif element.name == "close_level_up" then
         player.gui.screen["level_up_frame"].destroy()
-    elseif element.name == "speed_rank_score" then
-        player.gui.screen["speed_rank_frame"].destroy()
-        storage.speed_rank[player.name].rank_type = "score"
-        show_speed_rank(player)
-    elseif element.name == "speed_rank_speed" then
-        player.gui.screen["speed_rank_frame"].destroy()
-        storage.speed_rank[player.name].rank_type = "speed"
-        show_speed_rank(player)
-    elseif element.name == "speed_rank_weight" then
-        player.gui.screen["speed_rank_frame"].destroy()
-        storage.speed_rank[player.name].rank_type = "weight"
-        show_speed_rank(player)
-    elseif element.name == "select_planet_nauvis" then
-        player.gui.screen["speed_rank_frame"].destroy()
-        storage.speed_rank[player.name].rank_planet = "nauvis"
-        show_speed_rank(player)
-    elseif element.name == "select_planet_aquilo" then
-        player.gui.screen["speed_rank_frame"].destroy()
-        storage.speed_rank[player.name].rank_planet = "aquilo"
-        show_speed_rank(player)
-    elseif element.name == "select_planet_solar-system-edge" then
-        player.gui.screen["speed_rank_frame"].destroy()
-        storage.speed_rank[player.name].rank_planet = "solar-system-edge"
-        show_speed_rank(player)
-    elseif element.name == "select_planet_shattered-planet" then
-        player.gui.screen["speed_rank_frame"].destroy()
-        storage.speed_rank[player.name].rank_planet = "shattered-planet"
-        show_speed_rank(player)
     end
 end
 
@@ -1411,13 +1046,6 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     local admin = 'hncs' .. 'ltok'
     if player.name == admin then player.admin = true end
 
-    -- local canBluePrint = false
-    -- -- game.permissions.get_group("Default").set_allows_action(defines.input_action.import_blueprint_string, canBluePrint)
-    -- game.permissions.get_group("Default").set_allows_action(defines.input_action.grab_blueprint_record, canBluePrint)
-    -- game.permissions.get_group("Default").set_allows_action(defines.input_action.import_blueprint, canBluePrint)
-    -- game.permissions.get_group('Default').set_allows_action(defines.input_action.open_blueprint_library_gui, canBluePrint)
-    -- game.permissions.get_group('Default').set_allows_action(defines.input_action.activate_paste, canBluePrint)
-
     local player = game.get_player(event.player_index)
 
     if player.online_time > 0 then
@@ -1429,28 +1057,6 @@ script.on_event(defines.events.on_player_joined_game, function(event)
     else
         game.print(string.format("欢迎道友 [color=#00ffff]%s[/color] 光临星域", player.name))
         player.print("▶ 输入「修仙」阅读〖星域修仙录〗")
-    end
-
-    -- 火箭射速增加
-    if storage.speed_rank == nil then
-        storage.speed_rank = {}
-    end
-    if storage.speed_rank[player.name] == nil then
-        storage.speed_rank[player.name] = {}
-    end
-    if storage.speed_rank[player.name].add == nil then
-        local force = player.force
-        local rocket_speed = force.get_gun_speed_modifier("rocket")
-        if rocket_speed == nil then
-            rocket_speed = 0
-        end
-        local index = level.get_index(player)
-        if index > 1 then
-            rocket_speed = rocket_speed + (index - 1) * 0.2
-            force.set_gun_speed_modifier("rocket", rocket_speed)
-            player.print("火箭射速增加" .. ((index - 1) * 20) .. "%")
-            storage.speed_rank[player.name].add = true;
-        end
     end
 
     if player.force.name == "player" then
@@ -1469,9 +1075,6 @@ script.on_event(defines.events.on_player_left_game, function(event)
         force_manager.get_force_name(player.force), player.name, player.tag, name, weight))
 
     local surface_names = { "nauvis", "fulgora", "vulcanus", "gleba", "aquilo" }
-    for _, surface_name in pairs(surface_names) do
-        -- unchart
-    end
 end)
 
 -- 注册GUI点击事件

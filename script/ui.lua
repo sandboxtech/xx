@@ -48,13 +48,6 @@ ui.create_team_buttons = function(player)
         style = "confirm_button"
     }
 
-    -- 神游榜按钮
-    flow.add {
-        type = "button",
-        name = "speed_rank_button",
-        caption = "查看神游榜",
-        style = "confirm_button"
-    }
 end
 
 
